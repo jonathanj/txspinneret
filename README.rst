@@ -25,5 +25,5 @@ Installation
     $ pip install txspinneret
 
 
-.. |build| image:: https://travis-ci.org/jonathanj/txspinneret.svg
+.. |build| image:: https://travis-ci.org/jonathanj/txspinneret.svg?branch=master
 .. _build: https://travis-ci.org/jonathanj/txspinneret
