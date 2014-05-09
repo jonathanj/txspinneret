@@ -1,4 +1,5 @@
 import cgi
+import datetime
 from collections import OrderedDict
 from functools import wraps
 from itertools import chain
@@ -79,3 +80,55 @@ def maybe(f, default=None):
             return default
         return f(x, *a, **kw)
     return _maybe
+
+
+
+# Thank you epsilon.extime.
+def _timedeltaToSignHrMin(offset):
+    """
+    Return a (sign, hour, minute) triple for the offset described by timedelta.
+
+    sign is a string, either "+" or "-". In the case of 0 offset, sign is "+".
+    """
+    minutes = round((offset.days * 3600000000 * 24
+                     + offset.seconds * 1000000
+                     + offset.microseconds)
+                    / 60000000.0)
+    if minutes < 0:
+        sign = '-'
+        minutes = -minutes
+    else:
+        sign = '+'
+    return (sign, minutes // 60, minutes % 60)
+
+
+
+class FixedOffset(datetime.tzinfo):
+    """
+    Fixed offset timezone.
+    """
+    _zeroOffset = datetime.timedelta()
+
+    def __init__(self, hours, minutes):
+        self.offset = datetime.timedelta(minutes = hours * 60 + minutes)
+
+
+    def utcoffset(self, dt):
+        return self.offset
+
+
+    def tzname(self, dt):
+        return _timedeltaToSignHrMin(self.offset)
+
+
+    def dst(self, tz):
+        return self._zeroOffset
+
+
+    def __repr__(self):
+        return '<%s.%s object at 0x%x offset %r>' % (
+            self.__module__, type(self).__name__, id(self), self.offset)
+
+
+
+UTC = FixedOffset(0, 0)

@@ -5,7 +5,7 @@ from testtools.matchers import Equals, Is
 from txspinneret.query import (
     parse, one, many, Boolean, Integer, Text, Delimited, Float, Timestamp,
     TimestampMs)
-from txspinneret.util import identity
+from txspinneret.util import identity, UTC
 
 
 
@@ -266,7 +266,7 @@ class TimestampTests(TestCase):
         """
         self.assertThat(
             Timestamp(b'1399412885.957837'),
-            Equals(datetime(2014, 5, 6, 23, 48, 5, 957837)))
+            Equals(datetime(2014, 5, 6, 21, 48, 5, 957837, tzinfo=UTC)))
 
 
 
@@ -298,7 +298,7 @@ class TimestampMsTests(TestCase):
         """
         self.assertThat(
             TimestampMs(b'1399412885957.837'),
-            Equals(datetime(2014, 5, 6, 23, 48, 5, 957837)))
+            Equals(datetime(2014, 5, 6, 21, 48, 5, 957837, tzinfo=UTC)))
 
 
 
