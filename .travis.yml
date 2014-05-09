@@ -4,9 +4,7 @@ python: 2.7
 env:
     - TOX_ENV=py27-twisted-132
     - TOX_ENV=py27-twisted-trunk
-    - TOX_ENV=py33-twisted-trunk
     - TOX_ENV=pyflakes
-    - TOX_ENV=pyflakes3
     - TOX_ENV=sphinx
 
 install:

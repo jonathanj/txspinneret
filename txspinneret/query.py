@@ -27,13 +27,6 @@ from txspinneret.util import maybe, UTC
 
 
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
-
-
 def _isSequenceTypeNotText(x):
     """
     Is this a ``sequence`` type that isn't also a ``string`` type?
