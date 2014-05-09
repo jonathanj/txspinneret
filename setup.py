@@ -1,45 +1,60 @@
 #!/usr/bin/env python
+import os
 from inspect import cleandoc
 from setuptools import setup
 
-__version__ = "0.1"
+
+def get_version():
+    """
+    Get the version from version module without importing more than
+    necessary.
+    """
+    version_module_path = os.path.join(
+        os.path.dirname(__file__), "txspinneret", "_version.py")
+    # The version module contains a variable called __version__
+    with open(version_module_path) as version_module:
+        exec(version_module.read())
+    return locals()["__version__"]
+
+
+def read(path):
+    """
+    Read the contents of a file.
+    """
+    with open(path) as f:
+        return f.read()
+
 
 setup(
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Software Development :: Libraries :: Python Modules"],
     name="txspinneret",
-    version=__version__,
-    packages=["txspinneret", "txspinneret.test"],
+    version=get_version(),
     description=cleandoc("""
         Spinneret is a collection of higher-level utility classes and functions
         for Twisted Web.
         """),
-    long_description=cleandoc("""
-        Spinneret is a collection of higher-level utility classes and functions
-        to make writing complex Twisted Web applications far simpler, it is
-        designed to easily integrate with existing Twisted Web projects for
-        things like the improved ``IResource`` implementations.
-        """),
+    install_requires=["zope.interface>=3.6.0", "twisted>=13.2.0"],
+    keywords="twisted web routing",
+    license="MIT",
+    packages=["txspinneret", "txspinneret.test"],
     url="https://github.com/jonathanj/txspinneret",
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: MacOS :: MacOS X",
-        "Operating System :: Microsoft :: Windows",
-        "Operating System :: POSIX",
-
-        # General classifiers to indicate "this project supports Python 2" and
-        # "this project supports Python 3".
-        "Programming Language :: Python :: 2",
-
-        # More specific classifiers to indicate more precisely which versions
-        # of those languages the project supports.
-        "Programming Language :: Python :: 2.7",
-
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
-
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        ],
-    install_requires=["zope.interface>=3.6.0", "twisted>=8.0"],
+    maintainer="Jonathan Jacobs",
+    long_description=read('README.rst'),
     test_suite="txspinneret",
-    )
+    extras_require={
+        "doc": ["Sphinx==1.2",
+                "sphinx-rtd-theme==0.1.6",
+                "sphinxcontrib-zopeext"],
+        "dev": ["testtools==0.9.35"],
+    })
