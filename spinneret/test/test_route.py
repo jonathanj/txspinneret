@@ -1,15 +1,19 @@
 from collections import OrderedDict
 from testtools import TestCase
-from testtools.matchers import Equals
+from testtools.matchers import Equals, Not
+from twisted.web import http
 from twisted.web.http_headers import Headers
+from twisted.web.resource import getChildForRequest
+from twisted.web.static import Data
 
-from spinneret.route import route, subroute, Integer, Text
+from spinneret.route import Router, route, subroute, Integer, Text
+from spinneret.test.util import InMemoryRequest
 
 
 
 class MockRequest(object):
     """
-    A mock L{twisted.web.iweb.IRequest}.
+    A mock `twisted.web.iweb.IRequest`.
     """
     def __init__(self, requestHeaders=None):
         if requestHeaders is None:
@@ -20,11 +24,11 @@ class MockRequest(object):
 
 class TextParameterTests(TestCase):
     """
-    Tests for L{spinneret.route.Text}.
+    Tests for `spinneret.route.Text`.
     """
     def test_parseBytes(self):
         """
-        Parse bytes and use the default encoding of I{UTF-8}.
+        Parse bytes and use the default encoding of ``UTF-8``.
         """
         request = MockRequest()
         match = Text(b'foo')
@@ -66,7 +70,7 @@ class TextParameterTests(TestCase):
 
     def test_encodingHeader(self):
         """
-        When the I{Content-Type} header is present and has a I{charset}
+        When the ``Content-Type`` header is present and has a ``charset``
         parameter, use that instead of the default encoding.
         """
         request = MockRequest(
@@ -84,7 +88,7 @@ class TextParameterTests(TestCase):
 
 class IntegerParameterTests(TestCase):
     """
-    Tests for L{spinneret.route.Integer}.
+    Tests for `spinneret.route.Integer`.
     """
     def test_match(self):
         """
@@ -99,7 +103,7 @@ class IntegerParameterTests(TestCase):
 
     def test_unparseable(self):
         """
-        L{None} is returned if the value is not a valid integer.
+        ``None`` is returned if the value is not a valid integer.
         """
         request = MockRequest()
         match = Integer(b'foo')
@@ -111,7 +115,7 @@ class IntegerParameterTests(TestCase):
 
 class StaticRouteTests(TestCase):
     """
-    Tests for L{spinneret.route.route} using only static path components.
+    Tests for `spinneret.route.route` using only static path components.
     """
     def test_nullRoute(self):
         """
@@ -228,7 +232,7 @@ class StaticRouteTests(TestCase):
 
 class DynamicRouteTests(TestCase):
     """
-    Tests for L{spinneret.route.route} using dynamic path components.
+    Tests for `spinneret.route.route` using dynamic path components.
     """
     def test_single(self):
         """
@@ -303,7 +307,7 @@ class DynamicRouteTests(TestCase):
 
 class MixedRouteTests(TestCase):
     """
-    Tests for L{spinneret.route.route} using mixed static and dynamic path
+    Tests for `spinneret.route.route` using mixed static and dynamic path
     components.
     """
     def test_multiple(self):
@@ -344,3 +348,128 @@ class MixedRouteTests(TestCase):
             subroute('foo', Text('name'))(request, ['foo', 'bar', 'quux']),
             Equals(
                 (OrderedDict([('name', 'bar')]), ['quux'])))
+
+
+
+class _RoutedThing(object):
+    """
+    Basic router.
+    """
+    router = Router()
+
+    @router.route(b'foo')
+    @router.route(b'foo2')
+    def foo(self, request, params):
+        return Data(b'hello world', b'text/plain')
+
+
+    @router.route()
+    def null(self, request, params):
+        return Data(b'null route', b'text/plain')
+
+
+
+class _SubroutedThing(object):
+    """
+    Basic sub-router.
+    """
+    router = Router()
+
+    @router.subroute(b'bar')
+    def bar(self, request, params):
+        return _RoutedThing().router
+
+
+
+def renderRoute(resource, segments):
+    """
+    Locate and render a child resource.
+
+    @type  resource: `IResource`
+    @param resource: Resource to locate the child resource on.
+
+    @type  segments: `list` of `bytes`
+    @param segments: Path segments.
+
+    @return: Request.
+    """
+    request = InMemoryRequest(segments)
+    child = getChildForRequest(resource, request)
+    request.render(child)
+    return request
+
+
+
+class RouterTests(TestCase):
+    """
+    Tests for `spinneret.resource.Router`.
+    """
+    def test_nullRoute(self):
+        """
+        Match the null route.
+        """
+        resource = _RoutedThing().router
+        self.assertThat(
+            renderRoute(resource, []).written,
+            Equals([b'null route']))
+
+
+    def test_nullRouteNoMatch(self):
+        """
+        If there is no route that can match the request path return 404 Not
+        Found.
+        """
+        resource = _SubroutedThing().router
+        request = renderRoute(resource, [])
+        self.assertThat(
+            request.responseCode,
+            Equals(http.NOT_FOUND))
+        self.assertThat(
+            request.written,
+            Not(Equals([b'null route'])))
+
+
+    def test_route(self):
+        """
+        Perform exact route matching using the `Router.route` decorator.
+        """
+        resource = _RoutedThing().router
+        self.assertThat(
+            renderRoute(resource, [b'foo']).written,
+            Equals([b'hello world']))
+
+
+    def test_routeNoMatch(self):
+        """
+        If there is no route that can match the request path return 404 Not
+        Found.
+        """
+        resource = _RoutedThing().router
+        request = renderRoute(resource, [b'not_a_thing'])
+        self.assertThat(
+            request.responseCode,
+            Equals(http.NOT_FOUND))
+        self.assertThat(
+            request.written,
+            Not(Equals([b'hello world'])))
+
+
+    def test_subroute(self):
+        """
+        Perform partial route matching using the `Router.subroute` decorator.
+        """
+        resource = _SubroutedThing().router
+        self.assertThat(
+            renderRoute(resource, [b'bar', b'foo']).written,
+            Equals([b'hello world']))
+
+
+    def test_multipleRoutes(self):
+        """
+        It is possible to have multiple routes handled by the same route
+        handler just by stacking the decorators.
+        """
+        resource = _RoutedThing().router
+        self.assertThat(
+            renderRoute(resource, [b'foo2']).written,
+            Equals([b'hello world']))
