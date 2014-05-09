@@ -191,7 +191,7 @@ class ContentEncodingTests(TestCase):
         """
         Use the encoding specified in the ``Content-Type`` header.
         """
-        headers = Headers({'Content-Type': ['text/plain;charset=utf-32']})
+        headers = Headers({b'Content-Type': [b'text/plain;charset=utf-32']})
         self.assertThat(
             contentEncoding(headers),
             Equals(b'utf-32'))
