@@ -10,7 +10,7 @@ def _isSequenceTypeNotText(x):
 
 
 
-def one(func):
+def one(func, n=0):
     """
     Create a callable that applies a callable to the first value in a sequence.
 
@@ -18,8 +18,8 @@ def one(func):
     returned.
     """
     def _one(result):
-        if _isSequenceTypeNotText(result) and result:
-            return func(result[0])
+        if _isSequenceTypeNotText(result) and len(result) > n:
+            return func(result[n])
         return None
     return maybe(_one)
 

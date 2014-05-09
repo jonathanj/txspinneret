@@ -342,6 +342,18 @@ class OneTests(TestCase):
             Equals(1))
 
 
+    def test_customN(self):
+        """
+        The element at the specified index of a sequence is used.
+        """
+        self.assertThat(
+            one(identity, n=1)([1, 2]),
+            Equals(2))
+        self.assertThat(
+            one(identity, n=3)((1, 2)),
+            Is(None))
+
+
 
 class ManyTests(TestCase):
     """
