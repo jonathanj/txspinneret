@@ -1,14 +1,11 @@
 from functools import partial
 from testtools import TestCase
-from testtools.matchers import Contains, Equals, Is, ContainsDict, raises, Not
+from testtools.matchers import Contains, Equals, ContainsDict, raises
 from twisted.internet.defer import Deferred
 from twisted.python.urlpath import URLPath
 from twisted.web import http
 from twisted.web.resource import getChildForRequest, Resource
-from twisted.web.server import NOT_DONE_YET
-from twisted.web.static import Data
 from twisted.web.template import Element, TagLoader, tags
-from twisted.web.test.requesthelper import DummyRequest
 
 from spinneret.resource import ContentTypeNegotiator, SpinneretResource
 from spinneret.test.util import InMemoryRequest
@@ -17,10 +14,11 @@ from spinneret.test.util import InMemoryRequest
 
 class SpinneretResourceTests(TestCase):
     """
-    Tests for L{spinneret.resource.SpinneretResource}.
+    Tests for `spinneret.resource.SpinneretResource`.
     """
     def test_renderDeferred(self):
         """
+        It is possible to return a `Deferred` from a render method.
         """
         class _RenderDeferred(SpinneretResource):
             def render_GET(zelf, request):
@@ -38,7 +36,7 @@ class SpinneretResourceTests(TestCase):
 
     def test_locateChildSetPostpath(self):
         """
-        The second elements in I{locateChild}'s return value is the new request
+        The second elements in ``locateChild`` return value is the new request
         postpath.
         """
         class _TestResource(SpinneretResource):
@@ -58,7 +56,7 @@ class SpinneretResourceTests(TestCase):
 
     def test_locateChildDefault(self):
         """
-        I{locateChild} returns 404 Not Found by default.
+        ``locateChild`` returns 404 Not Found by default.
         """
         resource = SpinneretResource()
         request = InMemoryRequest([''])
@@ -74,7 +72,7 @@ class SpinneretResourceTests(TestCase):
 
     def test_locateChildNotFound(self):
         """
-        If I{locateChild} returns C{None} the result is a resource for 404 Not
+        If ``locateChild`` returns ``None`` the result is a resource for 404 Not
         Found.
         """
         class _TestResource(SpinneretResource):
@@ -95,7 +93,7 @@ class SpinneretResourceTests(TestCase):
 
     def test_locateChildRenderable(self):
         """
-        If I{locateChild} returns something adaptable to L{IRenderable} it is
+        If ``locateChild`` returns something adaptable to `IRenderable` it is
         rendered.
         """
         class _TestElement(Element):
@@ -119,7 +117,7 @@ class SpinneretResourceTests(TestCase):
 
     def test_locateChildResource(self):
         """
-        If I{locateChild} returns something adaptable to L{IResource} it is
+        If ``locateChild`` returns something adaptable to `IResource` it is
         returned.
         """
         class _ResultingResource(Resource):
@@ -146,7 +144,7 @@ class SpinneretResourceTests(TestCase):
 
     def test_locateChildRedirect(self):
         """
-        If I{locateChild} returns a L{URLPath} instance a redirect is made.
+        If ``locateChild`` returns a `URLPath` instance a redirect is made.
         """
         class _TestResource(SpinneretResource):
             def locateChild(zelf, request, segments):
@@ -168,7 +166,7 @@ class SpinneretResourceTests(TestCase):
 
 class _FooJSON(Resource):
     """
-    Resource for handling C{application/json} requests.
+    Resource for handling ``application/json`` requests.
     """
     contentType = b'application/json'
     acceptTypes = [contentType]
@@ -181,7 +179,7 @@ class _FooJSON(Resource):
 
 class ContentTypeNegotiatorTests(TestCase):
     """
-    Tests for L{spinneret.resource.ContentTypeNegotiator}.
+    Tests for `spinneret.resource.ContentTypeNegotiator`.
     """
     def test_duplicateHandlers(self):
         """
@@ -217,8 +215,8 @@ class ContentTypeNegotiatorTests(TestCase):
 
     def test_fallback(self):
         """
-        If no handler could be negotiated but C{fallback} was C{True} then use
-        the first specified handler.
+        If no handler could be negotiated but ``fallback`` was ``True`` then
+        use the first specified handler.
         """
         class _BarXML(object):
             acceptTypes = [b'applicaton/xml']
@@ -242,7 +240,7 @@ class ContentTypeNegotiatorTests(TestCase):
 
     def test_negotiate(self):
         """
-        Negotiate a handler resource based on the I{Accept} header.
+        Negotiate a handler resource based on the ``Accept`` header.
         """
         resource = ContentTypeNegotiator([_FooJSON()])
         request = InMemoryRequest([])

@@ -11,11 +11,11 @@ identity = lambda x: x
 
 def _parseAccept(headers):
     """
-    Parse and sort an I{Accept} header.
+    Parse and sort an ``Accept`` header.
 
-    The header is sorted according to the I{q} parameter for each header value.
+    The header is sorted according to the ``q`` parameter for each header value.
 
-    @rtype: L{OrderedDict} mapping L{bytes} to L{dict}
+    @rtype: `OrderedDict` mapping `bytes` to `dict`
     @return: Mapping of media types to header parameters.
     """
     def sort((contentType, args)):
@@ -29,9 +29,9 @@ def _splitHeaders(headers):
     Split an HTTP header whose components are separated with commas.
 
     Each component is then split on semicolons and the component arguments
-    converted into a L{dict}.
+    converted into a `dict`.
 
-    @return: L{list} of C{(bytes, dict)}
+    @return: `list` of 2-`tuple` of `bytes`, `dict`
     @return: List of header arguments and mapping of component argument names
         to values.
     """
@@ -44,16 +44,16 @@ def _splitHeaders(headers):
 
 def contentEncoding(requestHeaders, encoding=None):
     """
-    Extract an encoding from a I{Content-Type} header.
+    Extract an encoding from a ``Content-Type`` header.
 
-    @type  requestHeaders: L{twisted.web.http_headers.Headers}
+    @type  requestHeaders: `twisted.web.http_headers.Headers`
     @param requestHeaders: Request headers.
 
-    @type  encoding: L{bytes}
-    @param encoding: Default encoding to assume if the I{Content-Type}
-        header is lacking one. Defaults to C{UTF-8}.
+    @type  encoding: `bytes`
+    @param encoding: Default encoding to assume if the ``Content-Type``
+        header is lacking one. Defaults to ``UTF-8``.
 
-    @rtype: L{bytes}
+    @rtype: `bytes`
     @return: Content encoding.
     """
     if encoding is None:
@@ -66,16 +66,16 @@ def contentEncoding(requestHeaders, encoding=None):
 
 
 
-def maybe(f):
+def maybe(f, default=None):
     """
     Create a nil-safe callable decorator.
 
-    If the wrapped callable receives C{None} as its argument, it will return
-    C{None} immediately.
+    If the wrapped callable receives ``None`` as its argument, it will return
+    ``None`` immediately.
     """
     @wraps(f)
     def _maybe(x, *a, **kw):
         if x is None:
-            return None
+            return default
         return f(x, *a, **kw)
     return _maybe

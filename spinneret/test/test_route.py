@@ -13,7 +13,7 @@ from spinneret.test.util import InMemoryRequest
 
 class MockRequest(object):
     """
-    A mock L{twisted.web.iweb.IRequest}.
+    A mock `twisted.web.iweb.IRequest`.
     """
     def __init__(self, requestHeaders=None):
         if requestHeaders is None:
@@ -24,11 +24,11 @@ class MockRequest(object):
 
 class TextParameterTests(TestCase):
     """
-    Tests for L{spinneret.route.Text}.
+    Tests for `spinneret.route.Text`.
     """
     def test_parseBytes(self):
         """
-        Parse bytes and use the default encoding of I{UTF-8}.
+        Parse bytes and use the default encoding of ``UTF-8``.
         """
         request = MockRequest()
         match = Text(b'foo')
@@ -70,7 +70,7 @@ class TextParameterTests(TestCase):
 
     def test_encodingHeader(self):
         """
-        When the I{Content-Type} header is present and has a I{charset}
+        When the ``Content-Type`` header is present and has a ``charset``
         parameter, use that instead of the default encoding.
         """
         request = MockRequest(
@@ -88,7 +88,7 @@ class TextParameterTests(TestCase):
 
 class IntegerParameterTests(TestCase):
     """
-    Tests for L{spinneret.route.Integer}.
+    Tests for `spinneret.route.Integer`.
     """
     def test_match(self):
         """
@@ -103,7 +103,7 @@ class IntegerParameterTests(TestCase):
 
     def test_unparseable(self):
         """
-        L{None} is returned if the value is not a valid integer.
+        ``None`` is returned if the value is not a valid integer.
         """
         request = MockRequest()
         match = Integer(b'foo')
@@ -115,7 +115,7 @@ class IntegerParameterTests(TestCase):
 
 class StaticRouteTests(TestCase):
     """
-    Tests for L{spinneret.route.route} using only static path components.
+    Tests for `spinneret.route.route` using only static path components.
     """
     def test_nullRoute(self):
         """
@@ -232,7 +232,7 @@ class StaticRouteTests(TestCase):
 
 class DynamicRouteTests(TestCase):
     """
-    Tests for L{spinneret.route.route} using dynamic path components.
+    Tests for `spinneret.route.route` using dynamic path components.
     """
     def test_single(self):
         """
@@ -307,7 +307,7 @@ class DynamicRouteTests(TestCase):
 
 class MixedRouteTests(TestCase):
     """
-    Tests for L{spinneret.route.route} using mixed static and dynamic path
+    Tests for `spinneret.route.route` using mixed static and dynamic path
     components.
     """
     def test_multiple(self):

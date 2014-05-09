@@ -1,5 +1,5 @@
 from twisted.web.resource import IResource
-from zope.interface import Attribute, Interface
+from zope.interface import Attribute
 
 
 
@@ -9,12 +9,12 @@ class INegotiableResource(IResource):
     """
     contentType = Attribute(
         """
-        L{bytes} indicating the content type of this resource when rendered.
+        `bytes` indicating the content type of this resource when rendered.
         """)
 
 
     acceptTypes = Attribute(
         """
-        L{list} of L{bytes} indicating the content types this resource is
-        capable of accepting.
+        `list` of `bytes` indicating the content types this resource is capable
+        of accepting.
         """)

@@ -11,11 +11,11 @@ from spinneret.util import identity
 
 class TextTests(TestCase):
     """
-    Tests for L{spinneret.query.Text}.
+    Tests for `spinneret.query.Text`.
     """
     def test_none(self):
         """
-        Parsing C{None} results in C{None}.
+        Parsing ``None`` results in ``None``.
         """
         self.assertThat(
             Text(None),
@@ -24,7 +24,7 @@ class TextTests(TestCase):
 
     def test_ascii(self):
         """
-        Parsing ASCII L{bytes} results in L{unicode}.
+        Parsing ASCII `bytes` results in `unicode`.
         """
         self.assertThat(
             Text(b'hello'),
@@ -52,11 +52,11 @@ class TextTests(TestCase):
 
 class IntegerTests(TestCase):
     """
-    Tests for L{spinneret.query.Integer}.
+    Tests for `spinneret.query.Integer`.
     """
     def test_none(self):
         """
-        Parsing C{None} results in C{None}.
+        Parsing ``None`` results in ``None``.
         """
         self.assertThat(
             Integer(None),
@@ -65,7 +65,7 @@ class IntegerTests(TestCase):
 
     def test_invalid(self):
         """
-        Invalid integers are parsed as C{None}.
+        Invalid integers are parsed as ``None``.
         """
         self.assertThat(
             Integer(b'not a number'),
@@ -84,11 +84,11 @@ class IntegerTests(TestCase):
 
 class FloatTests(TestCase):
     """
-    Tests for L{spinneret.query.Float}.
+    Tests for `spinneret.query.Float`.
     """
     def test_none(self):
         """
-        Parsing C{None} results in C{None}.
+        Parsing ``None`` results in ``None``.
         """
         self.assertThat(
             Float(None),
@@ -97,7 +97,7 @@ class FloatTests(TestCase):
 
     def test_invalid(self):
         """
-        Invalid floats are parsed as C{None}.
+        Invalid floats are parsed as ``None``.
         """
         self.assertThat(
             Float(b'not a number'),
@@ -116,11 +116,11 @@ class FloatTests(TestCase):
 
 class BooleanTests(TestCase):
     """
-    Tests for L{spinneret.query.Boolean}.
+    Tests for `spinneret.query.Boolean`.
     """
     def test_none(self):
         """
-        Parsing C{None} results in C{None}.
+        Parsing ``None`` results in ``None``.
         """
         self.assertThat(
             Boolean(None),
@@ -129,7 +129,7 @@ class BooleanTests(TestCase):
 
     def test_invalid(self):
         """
-        Invalid boolean values are parsed as C{None}.
+        Invalid boolean values are parsed as ``None``.
         """
         self.assertThat(
             Boolean(b'not a boolean'),
@@ -138,7 +138,7 @@ class BooleanTests(TestCase):
 
     def test_true(self):
         """
-        Valid true boolean values are parsed as C{True}.
+        Valid true boolean values are parsed as ``True``.
         """
         self.assertThat(
             Boolean(b'yes'),
@@ -159,7 +159,7 @@ class BooleanTests(TestCase):
 
     def test_false(self):
         """
-        Valid false boolean values are parsed as C{False}.
+        Valid false boolean values are parsed as ``False``.
         """
         self.assertThat(
             Boolean(b'no'),
@@ -181,11 +181,11 @@ class BooleanTests(TestCase):
 
 class DelimitedTests(TestCase):
     """
-    Tests for L{spinneret.query.Delimited}.
+    Tests for `spinneret.query.Delimited`.
     """
     def test_empty(self):
         """
-        An empty value results in an empty L{list}.
+        An empty value results in an empty `list`.
         """
         self.assertThat(
             Delimited(b''),
@@ -240,11 +240,11 @@ class DelimitedTests(TestCase):
 
 class TimestampTests(TestCase):
     """
-    Tests for L{spinneret.query.Timestamp}.
+    Tests for `spinneret.query.Timestamp`.
     """
     def test_none(self):
         """
-        Parsing C{None} results in C{None}.
+        Parsing ``None`` results in ``None``.
         """
         self.assertThat(
             Timestamp(None),
@@ -253,7 +253,7 @@ class TimestampTests(TestCase):
 
     def test_invalid(self):
         """
-        Invalid timestamps are parsed as C{None}.
+        Invalid timestamps are parsed as ``None``.
         """
         self.assertThat(
             Timestamp(b'not a number'),
@@ -272,11 +272,11 @@ class TimestampTests(TestCase):
 
 class TimestampMsTests(TestCase):
     """
-    Tests for L{spinneret.query.TimestampMs}.
+    Tests for `spinneret.query.TimestampMs`.
     """
     def test_none(self):
         """
-        Parsing C{None} results in C{None}.
+        Parsing ``None`` results in ``None``.
         """
         self.assertThat(
             TimestampMs(None),
@@ -285,7 +285,7 @@ class TimestampMsTests(TestCase):
 
     def test_invalid(self):
         """
-        Invalid timestamps are parsed as C{None}.
+        Invalid timestamps are parsed as ``None``.
         """
         self.assertThat(
             TimestampMs(b'not a number'),
@@ -304,11 +304,11 @@ class TimestampMsTests(TestCase):
 
 class OneTests(TestCase):
     """
-    Tests for L{spinneret.query.one}.
+    Tests for `spinneret.query.one`.
     """
     def test_nonSequence(self):
         """
-        A non-sequence, or empty sequence, is parsed as C{None}.
+        A non-sequence, or empty sequence, is parsed as ``None``.
         """
         self.assertThat(
             one(identity)(None),
@@ -357,11 +357,11 @@ class OneTests(TestCase):
 
 class ManyTests(TestCase):
     """
-    Tests for L{spinneret.query.many}.
+    Tests for `spinneret.query.many`.
     """
     def test_nonSequence(self):
         """
-        A non-sequence is parsed as C{None}.
+        A non-sequence is parsed as ``None``.
         """
         self.assertThat(
             many(identity)(None),
@@ -395,7 +395,7 @@ class ManyTests(TestCase):
 
 class ParseTests(TestCase):
     """
-    Tests for L{spinneret.query.parse}.
+    Tests for `spinneret.query.parse`.
     """
     def test_empty(self):
         """
@@ -409,7 +409,7 @@ class ParseTests(TestCase):
 
     def test_nonexistentArgument(self):
         """
-        If a query argument is expected but not found it appears as C{None} in
+        If a query argument is expected but not found it appears as ``None`` in
         the result.
         """
         self.assertThat(

@@ -1,5 +1,15 @@
-from functools import partial
-from twisted.internet.defer import Deferred, maybeDeferred
+"""
+A collection of higher-level Twisted Web resources, suitable for use with any
+existing ``IResource`` implementations.
+
+`SpinneretResource` supports child location that results in an `IResource`,
+`IRenderable` or `URLPath` (to indicate a redirect), or a `Deferred` resulting
+in any of the previously mentioned values.
+
+`ContentTypeNegotiator` will negotiate a resource based on the ``Accept``
+header.
+"""
+from twisted.internet.defer import Deferred, maybeDeferred, succeed
 from twisted.web import http
 from twisted.web.iweb import IRenderable
 from twisted.web.resource import IResource, NoResource, Resource
@@ -9,21 +19,45 @@ from twisted.web.util import DeferredResource, Redirect
 from twisted.python.urlpath import URLPath
 
 from spinneret.util import _parseAccept
-from spinneret.route import route, subroute
 
 
 
 class NotAcceptable(Resource):
     """
-    No acceptable content type could be negotiated.
+    Leaf resource that renders an empty body for ``406 Not Acceptable``.
     """
+    isLeaf = True
+
     def render(self, request):
         request.setResponseCode(http.NOT_ACCEPTABLE)
         return b''
 
 
 
-NotFound = partial(NoResource, b'Resource not found')
+class NotFound(NoResource):
+    """
+    Leaf resource that renders a page for ``404 Not Found``.
+    """
+    def __init__(self):
+        NoResource.__init__(self, b'Resource not found')
+
+
+
+class _RenderableResource(Resource):
+    """
+    `IResource` implementation for `IRendable`s.
+    """
+    isLeaf = True
+
+    def __init__(self, renderable, doctype=b'<!DOCTYPE html>'):
+        Resource.__init__(self)
+        self._renderable = renderable
+        self._doctype = doctype
+
+
+    def render_GET(self, request):
+        request.setResponseCode(http.OK)
+        return renderElement(request, self._renderable, self._doctype)
 
 
 
@@ -31,19 +65,23 @@ class SpinneretResource(Resource, object):
     """
     Web resource convenience base class.
 
-    Child resource location is done by L{SpinneretResource.locateChild}, which
+    Child resource location is done by `SpinneretResource.locateChild`, which
     gives a slightly higher level interface than
-    L{IResource.getChildWithDefault}.
+    `IResource.getChildWithDefault
+    <twisted:twisted.web.resource.IResource.getChildWithDefault>`.
     """
     def _adaptToResource(self, result):
         """
-        Adapt a result to L{IResource}.
+        Adapt a result to `IResource`.
 
-        Several adaptions are tried they are, in order: C{None},
-        L{IRenderable}, L{IResource}, and L{URLPath}. Anything else is returned
-        as is.
+        Several adaptions are tried they are, in order: ``None``,
+        `IRenderable <twisted:twisted.web.iweb.IRenderable>`, `IResource
+        <twisted:twisted.web.resource.IResource>`, and `URLPath
+        <twisted:twisted.python.urlpath.URLPath>`. Anything else is returned as
+        is.
 
-        A L{URLPath} is treated as a redirect.
+        A `URLPath <twisted:twisted.python.urlpath.URLPath>` is treated as
+        a redirect.
         """
         if result is None:
             return NotFound()
@@ -76,9 +114,9 @@ class SpinneretResource(Resource, object):
 
     def _handleRenderResult(self, request, result):
         """
-        Handle the result from L{IResource.render}.
+        Handle the result from `IResource.render`.
 
-        If the result is a L{Deferred} then return L{NOT_DONE_YET} and add
+        If the result is a `Deferred` then return `NOT_DONE_YET` and add
         a callback to write the result to the request when it arrives.
         """
         def _requestFinished(result, cancel):
@@ -110,62 +148,41 @@ class SpinneretResource(Resource, object):
 
     def locateChild(self, request, segments):
         """
-        Locate another object which can be adapted to L{IResource}.
+        Locate another object which can be adapted to `IResource`.
 
-        @type  request: L{IRequest}
-        @param request: Request.
+        :type  request: `IRequest`
+        :param request: Request.
 
-        @type  segments: I{sequence} of L{bytes}
-        @param segments: Sequence of strings giving the remaining query
+        :type  segments: ``sequence`` of `bytes`
+        :param segments: Sequence of strings giving the remaining query
             segments to resolve.
 
-        @rtype: 2-L{tuple} of L{IResource}, L{IRendable} or L{URLPath} and
-            a I{sequence} of L{bytes}
-        @return: Pair of an L{IResource}, L{IRendable} or L{URLPath} and
+        :rtype: 2-`tuple` of `IResource`, `IRendable` or `URLPath` and
+            a ``sequence`` of `bytes`
+        :return: Pair of an `IResource`, `IRendable` or `URLPath` and
             a sequence of the remaining path segments to be process, or
-            a L{Deferred} containing the aforementioned result.
+            a `Deferred` containing the aforementioned result.
         """
         return NotFound(), []
 
 
 
-class _RenderableResource(Resource):
-    """
-    L{IResource} implementation for L{IRendable}s.
-    """
-    isLeaf = True
-
-
-    def __init__(self, renderable, doctype=b'<!DOCTYPE html>'):
-        Resource.__init__(self)
-        self._renderable = renderable
-        self._doctype = doctype
-
-
-    def render_GET(self, request):
-        request.setResponseCode(http.OK)
-        return renderElement(request, self._renderable, self._doctype)
-
-
-
 class ContentTypeNegotiator(Resource):
     """
-    Negotiate an appropriate representation based on the I{Accept} header.
+    Negotiate an appropriate representation based on the ``Accept`` header.
 
     Rendering this resource will negotiate a representation and render the
     matching handler.
-
-    @ivar _handlers: See L{__init__}.
-    @ivar _fallback: See L{__init__}.
     """
     def __init__(self, handlers, fallback=False):
         """
-        @type  handlers: I{iterable} of L{INegotiableResource}
-        @param handlers: Iterable of resources to use as handlers for
+        :type  handlers: ``iterable`` of `INegotiableResource
+            <spinneret.ispinneret.INegotiableResource>`
+        :param handlers: Iterable of resources to use as handlers for
             negotiation.
 
-        @type  fallback: L{bool}
-        @param fallback: Fall back to the first handler in the case where
+        :type  fallback: `bool`
+        :param fallback: Fall back to the first handler in the case where
             negotiation fails?
         """
         Resource.__init__(self)
@@ -185,8 +202,8 @@ class ContentTypeNegotiator(Resource):
         Negotiate a handler based on the content types acceptable to the
         client.
 
-        @rtype: 2-L{tuple} of L{twisted.web.iweb.IResource} and L{bytes}
-        @return: Pair of a resource and the content type.
+        :rtype: 2-`tuple` of `twisted.web.iweb.IResource` and `bytes`
+        :return: Pair of a resource and the content type.
         """
         accept = _parseAccept(request.requestHeaders.getRawHeaders('Accept'))
         for contentType in accept.keys():

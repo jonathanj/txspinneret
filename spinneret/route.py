@@ -1,24 +1,44 @@
+"""
+URL routing for Twisted Web resources.
+
+A Python-based Domain Specific Language is used to specify and match routing
+paths, string literal components are matched for structure while plain callable
+components match segment values and are stored by name for use in the handler,
+assuming all the components match; this makes it trivial to create new
+functions to match path components.
+
+`route` is used to match a URL exactly (the number of route components must
+match the number of URL path segments) while `subroute` is used to match a URL
+prefix (the specified route components must match the respective segments in
+a URL path, additional segments are used in child resource location as normal.)
+
+`Router` is an `IResource` that allows decorating methods as route or subroute
+handlers.
+"""
 from collections import OrderedDict
 from functools import partial
 from itertools import izip_longest
 
 from spinneret import query
+from spinneret.resource import NotFound, SpinneretResource
 from spinneret.util import contentEncoding
 
 
 
 def Text(name, encoding=None):
     """
-    Match a text route parameter.
+    Match a route parameter.
 
-    @type  name: L{bytes}
-    @param name: Route parameter name.
+    `Any` is a synonym for `Text`.
 
-    @type  encoding: L{bytes}
-    @param encoding: Default encoding to assume if the I{Content-Type}
+    :type  name: `bytes`
+    :param name: Route parameter name.
+
+    :type  encoding: `bytes`
+    :param encoding: Default encoding to assume if the ``Content-Type``
         header is lacking one.
 
-    @return: I{callable} suitable for use with L{route} or L{subroute}.
+    :return: ``callable`` suitable for use with `route` or `subroute`.
     """
     def _match(request, value):
         return name, query.Text(
@@ -28,21 +48,25 @@ def Text(name, encoding=None):
 
 
 
+Any = Text
+
+
+
 def Integer(name, base=10, encoding=None):
     """
     Match an integer route parameter.
 
-    @type  name: L{bytes}
-    @param name: Route parameter name.
+    :type  name: `bytes`
+    :param name: Route parameter name.
 
-    @type  base: L{int}
-    @param base: Base to interpret the value in.
+    :type  base: `int`
+    :param base: Base to interpret the value in.
 
-    @type  encoding: L{bytes}
-    @param encoding: Default encoding to assume if the I{Content-Type}
+    :type  encoding: `bytes`
+    :param encoding: Default encoding to assume if the ``Content-Type``
         header is lacking one.
 
-    @return: I{callable} suitable for use with L{route} or L{subroute}.
+    :return: ``callable`` suitable for use with `route` or `subroute`.
     """
     def _match(request, value):
         return name, query.Integer(
@@ -61,24 +85,24 @@ def _matchRoute(components, request, segments, partialMatching):
     resource hierarchy, in other words it is only possible to match URIs nested
     more deeply than the parent resource.
 
-    @type  components: I{iterable} of L{bytes} or I{callable}s
-    @param components: Iterable of path components, to match against the
+    :type  components: ``iterable`` of `bytes` or `callable`
+    :param components: Iterable of path components, to match against the
         request, either static strings or dynamic parameters. As a convenience,
-        a single L{bytes} component containing C{/}s may be given instead of
+        a single `bytes` component containing ``/`` may be given instead of
         manually separating the components. If no components are given the null
-        route is matched, this is the case where C{segments} is empty.
+        route is matched, this is the case where ``segments`` is empty.
 
-    @type  segments: I{sequence} of L{bytes}
-    @param segments: Sequence of path segments, from the request, to match
+    :type  segments: ``sequence`` of `bytes`
+    :param segments: Sequence of path segments, from the request, to match
         against.
 
-    @type  partialMatching: L{bool}
-    @param partialMatching: Allow partial matching against the request path?
+    :type  partialMatching: `bool`
+    :param partialMatching: Allow partial matching against the request path?
 
-    @rtype: 2-L{tuple} of L{dict} keyed on L{bytes} and L{list} of L{bytes}
-    @return: Pair of parameter results, mapping parameter names to processed
+    :rtype: 2-`tuple` of `dict` keyed on `bytes` and `list` of `bytes`
+    :return: Pair of parameter results, mapping parameter names to processed
         values, and a list of the remaining request path segments. If there is
-        no route match the result will be C{None} and the original request path
+        no route match the result will be ``None`` and the original request path
         segments.
     """
     if len(components) == 1 and isinstance(components[0], bytes):
@@ -129,18 +153,18 @@ def route(*components):
     resource hierarchy, in other words it is only possible to match URIs nested
     more deeply than the parent resource.
 
-    @type  components: I{iterable} of L{bytes} or I{callable}s
-    @param components: Iterable of path components, to match against the
+    :type  components: ``iterable`` of `bytes` or `callable`
+    :param components: Iterable of path components, to match against the
         request, either static strings or dynamic parameters. As a convenience,
-        a single L{bytes} component containing C{/}s may be given instead of
+        a single `bytes` component containing ``/`` may be given instead of
         manually separating the components. If no components are given the null
-        route is matched, this is the case where C{segments} is empty.
+        route is matched, this is the case where ``segments`` is empty.
 
-    @rtype: 2-L{tuple} of L{dict} keyed on L{bytes} and L{list} of L{bytes}
-    @return: Pair of parameter results, mapping parameter names to processed
+    :rtype: 2-`tuple` of `dict` keyed on `bytes` and `list` of `bytes`
+    :return: Pair of parameter results, mapping parameter names to processed
         values, and a list of the remaining request path segments. If there is
-        no route match the result will be C{None} and the original request path
-        segments.
+        no route match the result will be ``None`` and the original request
+        path segments.
     """
     return partial(_matchRoute, components, partialMatching=False)
 
