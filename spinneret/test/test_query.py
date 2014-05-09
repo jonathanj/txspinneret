@@ -365,13 +365,13 @@ class ManyTests(TestCase):
         """
         self.assertThat(
             many(identity)(None),
-            Is(None))
+            Equals([]))
         self.assertThat(
             many(identity)(42),
-            Is(None))
+            Equals([]))
         self.assertThat(
             many(identity)(b'hello'),
-            Is(None))
+            Equals([]))
 
 
     def test_sequence(self):

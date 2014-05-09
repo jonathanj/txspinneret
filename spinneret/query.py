@@ -34,8 +34,8 @@ def many(func):
     def _many(result):
         if _isSequenceTypeNotText(result):
             return map(func, result)
-        return None
-    return maybe(_many)
+        return []
+    return maybe(_many, default=[])
 
 
 
