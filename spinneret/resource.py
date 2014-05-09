@@ -197,14 +197,14 @@ class ContentTypeNegotiator(Resource):
         if self._fallback:
             handler = self._handlers[0]
             return handler, handler.contentType
-        return NotAcceptable, None
+        return NotAcceptable(), None
 
 
     def render(self, request):
         handler, contentType = self._negotiateHandler(request)
         if contentType is not None:
             request.setHeader(b'Content-Type', contentType)
-        return handler().render(request)
+        return handler.render(request)
 
 
 

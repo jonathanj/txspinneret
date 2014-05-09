@@ -255,10 +255,10 @@ class ContentTypeNegotiatorTests(TestCase):
             acceptTypes = [b'application/json']
 
         self.assertThat(
-            partial(ContentTypeNegotiator, [_FooJSON, _FooJSON]),
+            partial(ContentTypeNegotiator, [_FooJSON(), _FooJSON()]),
             raises(ValueError))
         self.assertThat(
-            partial(ContentTypeNegotiator, [_FooJSON, _BarJSON]),
+            partial(ContentTypeNegotiator, [_FooJSON(), _BarJSON()]),
             raises(ValueError))
 
 
@@ -267,7 +267,7 @@ class ContentTypeNegotiatorTests(TestCase):
         If no handler could be negotiated then return an empty resource with
         406 Not Acceptable.
         """
-        resource = ContentTypeNegotiator([_FooJSON])
+        resource = ContentTypeNegotiator([_FooJSON()])
         request = InMemoryRequest([])
         request.requestHeaders.setRawHeaders(b'accept', [b'text/plain'])
         request.render(resource)
@@ -287,7 +287,8 @@ class ContentTypeNegotiatorTests(TestCase):
         class _BarXML(object):
             acceptTypes = [b'applicaton/xml']
 
-        resource = ContentTypeNegotiator([_FooJSON, _BarXML], fallback=True)
+        resource = ContentTypeNegotiator(
+            [_FooJSON(), _BarXML()], fallback=True)
         request = InMemoryRequest([])
         request.requestHeaders.setRawHeaders(b'accept', [b'text/plain'])
         request.render(resource)
@@ -307,7 +308,7 @@ class ContentTypeNegotiatorTests(TestCase):
         """
         Negotiate a handler resource based on the I{Accept} header.
         """
-        resource = ContentTypeNegotiator([_FooJSON])
+        resource = ContentTypeNegotiator([_FooJSON()])
         request = InMemoryRequest([])
         request.requestHeaders.setRawHeaders(b'accept', [b'application/json'])
         request.render(resource)
