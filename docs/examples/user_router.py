@@ -1,6 +1,6 @@
 from collections import namedtuple
 from twisted.web.static import Data
-from spinneret.route import Router, Any
+from txspinneret.route import Router, Any
 
 class UserRouter(object):
     router = Router()

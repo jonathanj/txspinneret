@@ -7,14 +7,14 @@ from twisted.web import http
 from twisted.web.resource import getChildForRequest, Resource
 from twisted.web.template import Element, TagLoader, tags
 
-from spinneret.resource import ContentTypeNegotiator, SpinneretResource
-from spinneret.test.util import InMemoryRequest
+from txspinneret.resource import ContentTypeNegotiator, SpinneretResource
+from txspinneret.test.util import InMemoryRequest
 
 
 
 class SpinneretResourceTests(TestCase):
     """
-    Tests for `spinneret.resource.SpinneretResource`.
+    Tests for `txspinneret.resource.SpinneretResource`.
     """
     def test_renderDeferred(self):
         """
@@ -179,7 +179,7 @@ class _FooJSON(Resource):
 
 class ContentTypeNegotiatorTests(TestCase):
     """
-    Tests for `spinneret.resource.ContentTypeNegotiator`.
+    Tests for `txspinneret.resource.ContentTypeNegotiator`.
     """
     def test_duplicateHandlers(self):
         """

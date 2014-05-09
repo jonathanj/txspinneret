@@ -19,9 +19,9 @@ from collections import OrderedDict
 from functools import partial
 from itertools import izip_longest
 
-from spinneret import query
-from spinneret.resource import NotFound, SpinneretResource
-from spinneret.util import contentEncoding
+from txspinneret import query
+from txspinneret.resource import NotFound, SpinneretResource
+from txspinneret.util import contentEncoding
 
 
 
@@ -207,7 +207,7 @@ class Router(SpinneretResource):
     `Router` is designed to be used as a Python descriptor, and route handlers
     decorated with `Router.route` or `Router.subroute`, route handlers should
     any value supported by `SpinneretResource.locateChild
-    <spinneret.resource.SpinneretResource.locateChild>`.
+    <txspinneret.resource.SpinneretResource.locateChild>`.
     """
     def __init__(self):
         self._routes = []
@@ -239,7 +239,7 @@ class Router(SpinneretResource):
 
     def route(self, *components):
         """
-        See `spinneret.route.route`.
+        See `txspinneret.route.route`.
 
         This decorator can be stacked with itself to specify multiple routes
         with a single handler.
@@ -252,7 +252,7 @@ class Router(SpinneretResource):
 
     def subroute(self, *components):
         """
-        See `spinneret.route.subroute`.
+        See `txspinneret.route.subroute`.
 
         This decorator can be stacked with itself to specify multiple routes
         with a single handler.

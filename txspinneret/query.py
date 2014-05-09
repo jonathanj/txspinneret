@@ -23,7 +23,7 @@ booleans.
 from datetime import datetime
 from operator import isSequenceType
 
-from spinneret.util import maybe
+from txspinneret.util import maybe
 
 
 

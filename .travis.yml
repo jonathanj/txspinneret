@@ -1,8 +1,8 @@
 language: python
 
 python:
-  - 2.6
   - 2.7
+  - pypy
 
 install:
   - pip install coveralls coverage
@@ -10,7 +10,7 @@ install:
   - pip install -e.
 
 script:
-  - coverage run --branch --source spinneret $(type -p trial) spinneret
+  - coverage run --branch --source txspinneret $(type -p trial) txspinneret
   - coverage report -m
 
 after_success:

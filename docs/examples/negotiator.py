@@ -1,8 +1,8 @@
 import json
-from spinneret.ispinneret import INegotiableResource
-from spinneret.resource import ContentTypeNegotiator, SpinneretResource
 from twisted.web.resource import Resource
 from twisted.web.template import Element, TagLoader, tags
+from txspinneret.interfaces import INegotiableResource
+from txspinneret.resource import ContentTypeNegotiator, SpinneretResource
 from zope.interface import implementer
 
 @implementer(INegotiableResource)

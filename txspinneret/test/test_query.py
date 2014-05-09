@@ -2,16 +2,16 @@ from datetime import datetime
 from testtools import TestCase
 from testtools.matchers import Equals, Is
 
-from spinneret.query import (
+from txspinneret.query import (
     parse, one, many, Boolean, Integer, Text, Delimited, Float, Timestamp,
     TimestampMs)
-from spinneret.util import identity
+from txspinneret.util import identity
 
 
 
 class TextTests(TestCase):
     """
-    Tests for `spinneret.query.Text`.
+    Tests for `txspinneret.query.Text`.
     """
     def test_none(self):
         """
@@ -52,7 +52,7 @@ class TextTests(TestCase):
 
 class IntegerTests(TestCase):
     """
-    Tests for `spinneret.query.Integer`.
+    Tests for `txspinneret.query.Integer`.
     """
     def test_none(self):
         """
@@ -84,7 +84,7 @@ class IntegerTests(TestCase):
 
 class FloatTests(TestCase):
     """
-    Tests for `spinneret.query.Float`.
+    Tests for `txspinneret.query.Float`.
     """
     def test_none(self):
         """
@@ -116,7 +116,7 @@ class FloatTests(TestCase):
 
 class BooleanTests(TestCase):
     """
-    Tests for `spinneret.query.Boolean`.
+    Tests for `txspinneret.query.Boolean`.
     """
     def test_none(self):
         """
@@ -181,7 +181,7 @@ class BooleanTests(TestCase):
 
 class DelimitedTests(TestCase):
     """
-    Tests for `spinneret.query.Delimited`.
+    Tests for `txspinneret.query.Delimited`.
     """
     def test_empty(self):
         """
@@ -240,7 +240,7 @@ class DelimitedTests(TestCase):
 
 class TimestampTests(TestCase):
     """
-    Tests for `spinneret.query.Timestamp`.
+    Tests for `txspinneret.query.Timestamp`.
     """
     def test_none(self):
         """
@@ -272,7 +272,7 @@ class TimestampTests(TestCase):
 
 class TimestampMsTests(TestCase):
     """
-    Tests for `spinneret.query.TimestampMs`.
+    Tests for `txspinneret.query.TimestampMs`.
     """
     def test_none(self):
         """
@@ -304,7 +304,7 @@ class TimestampMsTests(TestCase):
 
 class OneTests(TestCase):
     """
-    Tests for `spinneret.query.one`.
+    Tests for `txspinneret.query.one`.
     """
     def test_nonSequence(self):
         """
@@ -357,7 +357,7 @@ class OneTests(TestCase):
 
 class ManyTests(TestCase):
     """
-    Tests for `spinneret.query.many`.
+    Tests for `txspinneret.query.many`.
     """
     def test_nonSequence(self):
         """
@@ -395,7 +395,7 @@ class ManyTests(TestCase):
 
 class ParseTests(TestCase):
     """
-    Tests for `spinneret.query.parse`.
+    Tests for `txspinneret.query.parse`.
     """
     def test_empty(self):
         """

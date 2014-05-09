@@ -1,4 +1,4 @@
-.. py:currentmodule:: spinneret.query
+.. py:currentmodule:: txspinneret.query
 
 URL Query Arguments
 ===================
@@ -33,7 +33,7 @@ this could be parsed with the following:
 
 .. code-block:: python
 
-    from spinneret import query as q
+    from txspinneret import query as q
     from twisted.python.constants import Names, NamedConstant
 
     class FlagConstants(Names):

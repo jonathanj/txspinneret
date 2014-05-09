@@ -6,8 +6,8 @@ from twisted.web.http_headers import Headers
 from twisted.web.resource import getChildForRequest
 from twisted.web.static import Data
 
-from spinneret.route import Router, route, subroute, Integer, Text
-from spinneret.test.util import InMemoryRequest
+from txspinneret.route import Router, route, subroute, Integer, Text
+from txspinneret.test.util import InMemoryRequest
 
 
 
@@ -24,7 +24,7 @@ class MockRequest(object):
 
 class TextParameterTests(TestCase):
     """
-    Tests for `spinneret.route.Text`.
+    Tests for `txspinneret.route.Text`.
     """
     def test_parseBytes(self):
         """
@@ -88,7 +88,7 @@ class TextParameterTests(TestCase):
 
 class IntegerParameterTests(TestCase):
     """
-    Tests for `spinneret.route.Integer`.
+    Tests for `txspinneret.route.Integer`.
     """
     def test_match(self):
         """
@@ -115,7 +115,7 @@ class IntegerParameterTests(TestCase):
 
 class StaticRouteTests(TestCase):
     """
-    Tests for `spinneret.route.route` using only static path components.
+    Tests for `txspinneret.route.route` using only static path components.
     """
     def test_nullRoute(self):
         """
@@ -232,7 +232,7 @@ class StaticRouteTests(TestCase):
 
 class DynamicRouteTests(TestCase):
     """
-    Tests for `spinneret.route.route` using dynamic path components.
+    Tests for `txspinneret.route.route` using dynamic path components.
     """
     def test_single(self):
         """
@@ -307,7 +307,7 @@ class DynamicRouteTests(TestCase):
 
 class MixedRouteTests(TestCase):
     """
-    Tests for `spinneret.route.route` using mixed static and dynamic path
+    Tests for `txspinneret.route.route` using mixed static and dynamic path
     components.
     """
     def test_multiple(self):
@@ -402,7 +402,7 @@ def renderRoute(resource, segments):
 
 class RouterTests(TestCase):
     """
-    Tests for `spinneret.resource.Router`.
+    Tests for `txspinneret.resource.Router`.
     """
     def test_nullRoute(self):
         """

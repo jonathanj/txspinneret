@@ -1,4 +1,4 @@
-.. py:currentmodule:: spinneret.resource
+.. py:currentmodule:: txspinneret.resource
 
 Twisted Web Utility Resources
 =============================
