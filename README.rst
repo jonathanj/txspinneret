@@ -28,5 +28,5 @@ Installation
 .. |build| image:: https://travis-ci.org/jonathanj/txspinneret.svg?branch=master
 .. _build: https://travis-ci.org/jonathanj/txspinneret
 
-.. |coverage| image:: https://coveralls.io/repos/jonathanj/txspinneret/badge.svg?branch=master
+.. |coverage| image:: https://coveralls.io/repos/jonathanj/txspinneret/badge.png?branch=master
 .. _coverage: https://coveralls.io/r/jonathanj/txspinneret?branch=master
