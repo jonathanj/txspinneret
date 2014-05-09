@@ -85,15 +85,21 @@ class SpinneretResource(Resource, object):
             cancel()
             return result
 
-        if isinstance(result, Deferred):
-            def _whenDone(result):
-                request.write(result)
+        if not isinstance(result, Deferred):
+            result = succeed(result)
+
+        def _whenDone(result):
+            render = getattr(result, 'render', lambda request: result)
+            renderResult = render(request)
+            if renderResult != NOT_DONE_YET:
+                request.write(renderResult)
                 request.finish()
-                return result
-            request.notifyFinish().addBoth(_requestFinished, result.cancel)
-            result.addCallback(_whenDone)
-            return NOT_DONE_YET
-        return result
+            return result
+        request.notifyFinish().addBoth(_requestFinished, result.cancel)
+        result.addCallback(self._adaptToResource)
+        result.addCallback(_whenDone)
+        result.addErrback(request.processingFailed)
+        return NOT_DONE_YET
 
 
     def render(self, request):

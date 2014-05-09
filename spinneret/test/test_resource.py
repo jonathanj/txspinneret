@@ -94,9 +94,7 @@ class SpinneretResourceTests(TestCase):
         resource = _RenderDeferred()
         request = InMemoryRequest([])
         request.method = b'GET'
-        self.assertThat(
-            resource.render(request),
-            Is(NOT_DONE_YET))
+        request.render(resource)
         self.assertThat(request.written, Equals([]))
         d.callback(b'hello')
         self.assertThat(request.written, Equals([b'hello']))
