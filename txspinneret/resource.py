@@ -101,7 +101,8 @@ class SpinneretResource(Resource, object):
 
 
     def getChildWithDefault(self, path, request):
-        def _setSegments((result, segments)):
+        def _setSegments(result):
+            result, segments = result
             request.postpath[:] = segments
             return result
 
