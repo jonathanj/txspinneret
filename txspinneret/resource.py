@@ -18,7 +18,7 @@ from twisted.web.template import renderElement
 from twisted.web.util import DeferredResource, Redirect
 from twisted.python.urlpath import URLPath
 
-from spinneret.util import _parseAccept
+from txspinneret.util import _parseAccept
 
 
 
@@ -101,7 +101,8 @@ class SpinneretResource(Resource, object):
 
 
     def getChildWithDefault(self, path, request):
-        def _setSegments((result, segments)):
+        def _setSegments(result):
+            result, segments = result
             request.postpath[:] = segments
             return result
 
@@ -177,7 +178,7 @@ class ContentTypeNegotiator(Resource):
     def __init__(self, handlers, fallback=False):
         """
         :type  handlers: ``iterable`` of `INegotiableResource
-            <spinneret.ispinneret.INegotiableResource>`
+            <txspinneret.interfaces.INegotiableResource>`
         :param handlers: Iterable of resources to use as handlers for
             negotiation.
 

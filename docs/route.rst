@@ -1,4 +1,4 @@
-.. py:currentmodule:: spinneret.route
+.. py:currentmodule:: txspinneret.route
 
 URL Routing Resources
 =====================
@@ -66,7 +66,7 @@ with ``@router.route()`` (the null route.)
 Matcher basics
 --------------
 
-`spinneret.route` contains some basic matchers such as `Any` (which is
+`txspinneret.route` contains some basic matchers such as `Any` (which is
 a synonym for `Text`) and `Integer`. These matchers are simple factory
 functions that take some parameters and produce a `callable` that takes the
 `IRequest` and the segment being matched, as `bytes`, returning a 2-`tuple` of

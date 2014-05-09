@@ -2,7 +2,7 @@ from testtools import TestCase
 from testtools.matchers import Equals, Is
 from twisted.web.http_headers import Headers
 
-from spinneret.util import (
+from txspinneret.util import (
     _parseAccept, _splitHeaders, maybe, contentEncoding, identity)
 
 
@@ -13,7 +13,7 @@ identityv = lambda *a, **kw: (a, kw)
 
 class ParseAcceptTests(TestCase):
     """
-    Tests for `spinneret.util._parseAccept`.
+    Tests for `txspinneret.util._parseAccept`.
     """
     def test_single(self):
         """
@@ -53,7 +53,7 @@ class ParseAcceptTests(TestCase):
 
 class SplitHeadersTests(TestCase):
     """
-    Tests for `spinneret.util._splitHeaders`.
+    Tests for `txspinneret.util._splitHeaders`.
     """
     def test_single(self):
         """
@@ -110,7 +110,7 @@ class SplitHeadersTests(TestCase):
 
 class MaybeTests(TestCase):
     """
-    Tests for `spinneret.util.maybe`.
+    Tests for `txspinneret.util.maybe`.
     """
     def test_none(self):
         """
@@ -154,7 +154,7 @@ class MaybeTests(TestCase):
 
 class ContentEncodingTests(TestCase):
     """
-    Tests for `spinneret.util.contentEncoding`.
+    Tests for `txspinneret.util.contentEncoding`.
     """
     def test_default(self):
         """
@@ -191,7 +191,7 @@ class ContentEncodingTests(TestCase):
         """
         Use the encoding specified in the ``Content-Type`` header.
         """
-        headers = Headers({'Content-Type': ['text/plain;charset=utf-32']})
+        headers = Headers({b'Content-Type': [b'text/plain;charset=utf-32']})
         self.assertThat(
             contentEncoding(headers),
             Equals(b'utf-32'))

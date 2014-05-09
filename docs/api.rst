@@ -1,7 +1,7 @@
 Resource routing
 ----------------
 
-.. automodule:: spinneret.route
+.. automodule:: txspinneret.route
    :members:
    :special-members:
    :show-inheritance:
@@ -13,7 +13,7 @@ Resource routing
 Query arguments
 ---------------
 
-.. automodule:: spinneret.query
+.. automodule:: txspinneret.query
    :members:
    :special-members:
    :show-inheritance:
@@ -25,7 +25,7 @@ Query arguments
 Utility resources
 -----------------
 
-.. automodule:: spinneret.resource
+.. automodule:: txspinneret.resource
    :members:
    :show-inheritance:
 
@@ -36,6 +36,6 @@ Utility resources
 Interfaces
 ----------
 
-.. automodule:: spinneret.ispinneret
+.. automodule:: txspinneret.interfaces
    :members:
    :show-inheritance:
