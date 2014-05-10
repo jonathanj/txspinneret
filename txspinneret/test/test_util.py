@@ -3,7 +3,7 @@ from testtools.matchers import Equals, Is
 from twisted.web.http_headers import Headers
 
 from txspinneret.util import (
-    _parseAccept, _splitHeaders, maybe, contentEncoding, identity)
+    _parseAccept, _splitHeaders, maybe, contentEncoding, identity, FixedOffset)
 
 
 
@@ -195,3 +195,23 @@ class ContentEncodingTests(TestCase):
         self.assertThat(
             contentEncoding(headers),
             Equals(b'utf-32'))
+
+
+
+class FixedOffsetTests(TestCase):
+    """
+    Tests for `txspinneret.util.FixedOffset`.
+    """
+    def test_repr(self):
+        """
+        Human-readable representation.
+        """
+        self.assertThat(
+            repr(FixedOffset(0, 0)),
+            Equals(b'FixedOffset(0, 0)'))
+        self.assertThat(
+            repr(FixedOffset(2, 0)),
+            Equals(b'FixedOffset(2, 0)'))
+        self.assertThat(
+            repr(FixedOffset(5, 30)),
+            Equals(b'FixedOffset(5, 30)'))

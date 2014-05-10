@@ -79,3 +79,34 @@ def maybe(f, default=None):
             return default
         return f(x, *a, **kw)
     return _maybe
+
+
+
+# Thank you epsilon.extime.
+class FixedOffset(datetime.tzinfo):
+    """
+    Fixed offset timezone.
+    """
+    _zeroOffset = datetime.timedelta()
+
+    def __init__(self, hours, minutes):
+        self._hours = hours
+        self._minutes = minutes
+        self.offset = datetime.timedelta(minutes=hours * 60 + minutes)
+
+
+    def utcoffset(self, dt):
+        return self.offset
+
+
+    def dst(self, tz):
+        return self._zeroOffset
+
+
+    def __repr__(self):
+        return b'%s(%d, %d)' % (
+            type(self).__name__, self._hours, self._minutes)
+
+
+
+UTC = FixedOffset(0, 0)

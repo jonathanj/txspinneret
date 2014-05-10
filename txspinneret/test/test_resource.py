@@ -6,7 +6,9 @@ from twisted.python.urlpath import URLPath
 from twisted.web import http
 from twisted.web.resource import getChildForRequest, Resource
 from twisted.web.template import Element, TagLoader, tags
+from zope.interface import implementer
 
+from txspinneret.interfaces import INegotiableResource
 from txspinneret.resource import ContentTypeNegotiator, SpinneretResource
 from txspinneret.test.util import InMemoryRequest
 
@@ -164,6 +166,7 @@ class SpinneretResourceTests(TestCase):
 
 
 
+@implementer(INegotiableResource)
 class _FooJSON(Resource):
     """
     Resource for handling ``application/json`` requests.
@@ -185,7 +188,9 @@ class ContentTypeNegotiatorTests(TestCase):
         """
         Only one handler for an accept type may be specified.
         """
+        @implementer(INegotiableResource)
         class _BarJSON(object):
+            contentType = b'application/json'
             acceptTypes = [b'application/json']
 
         self.assertThat(
@@ -218,7 +223,9 @@ class ContentTypeNegotiatorTests(TestCase):
         If no handler could be negotiated but ``fallback`` was ``True`` then
         use the first specified handler.
         """
+        @implementer(INegotiableResource)
         class _BarXML(object):
+            contentType = b'application/xml'
             acceptTypes = [b'applicaton/xml']
 
         resource = ContentTypeNegotiator(
