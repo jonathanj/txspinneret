@@ -1,3 +1,6 @@
+API Documentation
+=================
+
 Resource routing
 ----------------
 
