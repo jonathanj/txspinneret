@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from testtools import TestCase
-from testtools.matchers import Equals, Not
+from testtools.matchers import Equals, Not, Is
 from twisted.web import http
 from twisted.web.http_headers import Headers
 from twisted.web.resource import getChildForRequest
@@ -404,6 +404,31 @@ class RouterTests(TestCase):
     """
     Tests for `txspinneret.resource.Router`.
     """
+    def test_descriptorRouter(self):
+        """
+        `Router.__get__` returns the `Router` instance when accessed via
+        a type.
+        """
+        _router = Router()
+        class _Descriptor(object):
+            router = _router
+
+        self.assertThat(
+            _Descriptor.router,
+            Is(_router))
+
+
+    def test_descriptorObject(self):
+        """
+        `Router.__get__` returns the instance of the object it's an attribute
+        of when accessed via an instance.
+        """
+        thing = _RoutedThing()
+        self.assertThat(
+            thing.router._self,
+            Is(thing))
+
+
     def test_nullRoute(self):
         """
         Match the null route.
