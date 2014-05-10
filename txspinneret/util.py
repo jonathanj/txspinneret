@@ -1,4 +1,5 @@
 import cgi
+import datetime
 from collections import OrderedDict
 from functools import wraps
 from itertools import chain
@@ -18,8 +19,8 @@ def _parseAccept(headers):
     @rtype: `OrderedDict` mapping `bytes` to `dict`
     @return: Mapping of media types to header parameters.
     """
-    def sort((contentType, args)):
-        return float(args.get('q', 1))
+    def sort(value):
+        return float(value[1].get('q', 1))
     return OrderedDict(sorted(_splitHeaders(headers), key=sort, reverse=True))
 
 

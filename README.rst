@@ -1,7 +1,7 @@
 Spinneret: Twisted Web's Silk Spinner
 =====================================
 
-|build|_
+|build|_ |coverage|_
 
 Spinneret is a collection of higher-level utility classes and functions to make
 writing complex Twisted Web applications far simpler, it is designed to easily
@@ -25,5 +25,8 @@ Installation
     $ pip install txspinneret
 
 
-.. |build| image:: https://travis-ci.org/jonathanj/txspinneret.svg
+.. |build| image:: https://travis-ci.org/jonathanj/txspinneret.svg?branch=master
 .. _build: https://travis-ci.org/jonathanj/txspinneret
+
+.. |coverage| image:: https://coveralls.io/repos/jonathanj/txspinneret/badge.png?branch=master
+.. _coverage: https://coveralls.io/r/jonathanj/txspinneret?branch=master
