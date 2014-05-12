@@ -377,7 +377,7 @@ class _SubroutedThing(object):
 
     @router.subroute(b'bar')
     def bar(self, request, params):
-        return _RoutedThing().router
+        return _RoutedThing().router.resource()
 
 
 
@@ -433,7 +433,7 @@ class RouterTests(TestCase):
         """
         Match the null route.
         """
-        resource = _RoutedThing().router
+        resource = _RoutedThing().router.resource()
         self.assertThat(
             renderRoute(resource, []).written,
             Equals([b'null route']))
@@ -444,7 +444,7 @@ class RouterTests(TestCase):
         If there is no route that can match the request path return 404 Not
         Found.
         """
-        resource = _SubroutedThing().router
+        resource = _SubroutedThing().router.resource()
         request = renderRoute(resource, [])
         self.assertThat(
             request.responseCode,
@@ -458,7 +458,7 @@ class RouterTests(TestCase):
         """
         Perform exact route matching using the `Router.route` decorator.
         """
-        resource = _RoutedThing().router
+        resource = _RoutedThing().router.resource()
         self.assertThat(
             renderRoute(resource, [b'foo']).written,
             Equals([b'hello world']))
@@ -469,7 +469,7 @@ class RouterTests(TestCase):
         If there is no route that can match the request path return 404 Not
         Found.
         """
-        resource = _RoutedThing().router
+        resource = _RoutedThing().router.resource()
         request = renderRoute(resource, [b'not_a_thing'])
         self.assertThat(
             request.responseCode,
@@ -483,7 +483,7 @@ class RouterTests(TestCase):
         """
         Perform partial route matching using the `Router.subroute` decorator.
         """
-        resource = _SubroutedThing().router
+        resource = _SubroutedThing().router.resource()
         self.assertThat(
             renderRoute(resource, [b'bar', b'foo']).written,
             Equals([b'hello world']))
@@ -494,7 +494,7 @@ class RouterTests(TestCase):
         It is possible to have multiple routes handled by the same route
         handler just by stacking the decorators.
         """
-        resource = _RoutedThing().router
+        resource = _RoutedThing().router.resource()
         self.assertThat(
             renderRoute(resource, [b'foo2']).written,
             Equals([b'hello world']))

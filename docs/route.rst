@@ -34,6 +34,9 @@ that you should delegate to another resource.
 Routes are intended to be used as method decorators and may be stacked to have
 multiple routes serviced by the same handler.
 
+Call `Router.resource` to produce an `IResource` suitable for composing with
+other parts of Spinneret or Twisted Web.
+
 
 Special routes
 --------------
@@ -50,7 +53,7 @@ Assuming we had the following hierarchy:
 
         @router.subroute('bar')
         def bar(self, request, params):
-            return SubRoot().router
+            return SubRoot().router.resource()
 
 
     class SubRoot(object):

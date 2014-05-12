@@ -17,11 +17,11 @@ class UserRouter(object):
 
     @router.subroute('friend', Any('name'))
     def friend(self, request, params):
-        return UserRouter(self.getFriend(params['name'])).router
+        return UserRouter(self.getFriend(params['name'])).router.resource()
 
 def start():
     User = namedtuple(b'User', ['name', 'friends'])
     bob = User('bob', {})
     chuck = User('chuck', {'bob': bob})
     default = User('default', {'bob': bob, 'chuck': chuck})
-    return UserRouter(default).router
+    return UserRouter(default).router.resource()
