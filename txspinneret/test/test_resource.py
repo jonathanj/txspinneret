@@ -4,12 +4,14 @@ from testtools.matchers import Contains, Equals, ContainsDict, raises
 from twisted.internet.defer import Deferred
 from twisted.python.urlpath import URLPath
 from twisted.web import http
-from twisted.web.resource import getChildForRequest, Resource
+from twisted.web.resource import getChildForRequest, Resource, IResource
+from twisted.web.static import Data
 from twisted.web.template import Element, TagLoader, tags
 from zope.interface import implementer
 
-from txspinneret.interfaces import INegotiableResource
-from txspinneret.resource import ContentTypeNegotiator, SpinneretResource
+from txspinneret.resource import (
+    ContentTypeNegotiator, SpinneretResource, INegotiableResource,
+    ISpinneretResource)
 from txspinneret.test.util import InMemoryRequest
 
 
@@ -18,16 +20,35 @@ class SpinneretResourceTests(TestCase):
     """
     Tests for `txspinneret.resource.SpinneretResource`.
     """
+    def test_resourceAdapter(self):
+        """
+        `ISpinneretResource` can be adapted to `IResource`.
+        """
+        @implementer(ISpinneretResource)
+        class _Adaptable(object):
+            def locateChild(zelf, request, segments):
+                return Data(b'hello', b'text/plain'), []
+
+        resource = IResource(_Adaptable())
+        request = InMemoryRequest([b'foo'])
+        result = getChildForRequest(resource, request)
+        request.render(result)
+        self.assertThat(
+            request.written,
+            Equals([b'hello']))
+
+
     def test_renderDeferred(self):
         """
         It is possible to return a `Deferred` from a render method.
         """
-        class _RenderDeferred(SpinneretResource):
+        @implementer(ISpinneretResource)
+        class _RenderDeferred(object):
             def render_GET(zelf, request):
                 return d
 
         d = Deferred()
-        resource = _RenderDeferred()
+        resource = SpinneretResource(_RenderDeferred())
         request = InMemoryRequest([])
         request.method = b'GET'
         request.render(resource)
@@ -41,11 +62,12 @@ class SpinneretResourceTests(TestCase):
         The second elements in ``locateChild`` return value is the new request
         postpath.
         """
-        class _TestResource(SpinneretResource):
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
             def locateChild(zelf, request, segments):
                 return None, [b'quux']
 
-        resource = _TestResource()
+        resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([b'foo', b'bar'])
         self.assertThat(
             request.postpath,
@@ -60,7 +82,7 @@ class SpinneretResourceTests(TestCase):
         """
         ``locateChild`` returns 404 Not Found by default.
         """
-        resource = SpinneretResource()
+        resource = SpinneretResource(Resource())
         request = InMemoryRequest([''])
         result = getChildForRequest(resource, request)
         request.render(result)
@@ -77,11 +99,12 @@ class SpinneretResourceTests(TestCase):
         If ``locateChild`` returns ``None`` the result is a resource for 404 Not
         Found.
         """
-        class _TestResource(SpinneretResource):
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
             def locateChild(zelf, request, segments):
                 return None, segments
 
-        resource = _TestResource()
+        resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
         result = getChildForRequest(resource, request)
         request.render(result)
@@ -101,11 +124,12 @@ class SpinneretResourceTests(TestCase):
         class _TestElement(Element):
             loader = TagLoader(tags.span(u'Hello ', tags.em(u'World')))
 
-        class _TestResource(SpinneretResource):
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
             def locateChild(zelf, request, segments):
                 return _TestElement(), segments
 
-        resource = _TestResource()
+        resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
         result = getChildForRequest(resource, request)
         request.render(result)
@@ -128,11 +152,12 @@ class SpinneretResourceTests(TestCase):
                 request.setResponseCode(http.OK)
                 return b'hello world'
 
-        class _TestResource(SpinneretResource):
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
             def locateChild(zelf, request, segments):
                 return _ResultingResource(), segments
 
-        resource = _TestResource()
+        resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
         result = getChildForRequest(resource, request)
         request.render(result)
@@ -148,11 +173,12 @@ class SpinneretResourceTests(TestCase):
         """
         If ``locateChild`` returns a `URLPath` instance a redirect is made.
         """
-        class _TestResource(SpinneretResource):
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
             def locateChild(zelf, request, segments):
                 return URLPath.fromString(b'http://quux.com/bar'), segments
 
-        resource = _TestResource()
+        resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
         result = getChildForRequest(resource, request)
         request.render(result)
