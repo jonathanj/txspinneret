@@ -1,25 +1,27 @@
 .. py:currentmodule:: txspinneret.resource
 
-Twisted Web Utility Resources
-=============================
+Resource Utilities
+==================
 
-A collection of higher-level Twisted Web resources, suitable for use with any
-existing `IResource` implementations.
+A collection of higher-level Twisted Web resource utilities, suitable for use
+with any existing `IResource` implementations.
 
 
 More featureful resources
 -------------------------
 
-`SpinneretResource` is an `IResource` implementation that allows child location
-(via `SpinneretResource.locateChild`) and rendering (via the normal
+`ISpinneretResource` is cut-down version of `IResource` that allows child
+location (via `ISpinneretResource.locateChild`) and rendering (via the normal
 ``render_GET``, ``render_POST``, etc. methods) to return any of the following:
 
+    * `bytes`, in the same way that `IResource` does;
     * An object that can be adapted to either `IResource` or `IRenderable`;
     * A `URLPath` instance, to indicate an HTTP redirect;
     * Or a `Deferred` that results in any of the above values.
 
-Render methods may still return plain bytes, making it possible to reuse
-existing `IResource` implementations.
+`ISpinneretResource` implementations may be adapted to `IResource`, either via
+``IResource(impl)`` or by ``SpinneretResource(impl)``, to produce a resource
+suitable for use with Twisted Web.
 
 
 Negotiating resources based on ``Accept``

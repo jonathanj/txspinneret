@@ -1,7 +1,7 @@
 .. py:currentmodule:: txspinneret.query
 
-URL Query Arguments
-===================
+Query Arguments
+===============
 
 The tedious process of processing query arguments usually follows this pattern:
 
