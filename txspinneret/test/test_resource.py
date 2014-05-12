@@ -1,9 +1,11 @@
 from functools import partial
 from testtools import TestCase
-from testtools.matchers import Contains, Equals, ContainsDict, raises
+from testtools.matchers import (
+    Contains, Equals, ContainsDict, raises, MatchesStructure, MatchesSetwise)
 from twisted.internet.defer import Deferred
 from twisted.python.urlpath import URLPath
 from twisted.web import http
+from twisted.web.error import UnsupportedMethod
 from twisted.web.resource import getChildForRequest, Resource, IResource
 from twisted.web.static import Data
 from twisted.web.template import Element, TagLoader, tags
@@ -11,8 +13,67 @@ from zope.interface import implementer
 
 from txspinneret.resource import (
     ContentTypeNegotiator, SpinneretResource, INegotiableResource,
-    ISpinneretResource)
-from txspinneret.test.util import InMemoryRequest
+    ISpinneretResource, _renderResource)
+from txspinneret.util import identity
+from txspinneret.test.util import InMemoryRequest, MatchesException
+
+
+
+class RenderResourceTests(TestCase):
+    """
+    Tests for `txspinneret.resource._renderResource`.
+    """
+    def test_existingRenderer(self):
+        """
+        Call the renderer defined that matches the request method.
+        """
+        called = []
+        resource = Resource()
+        request = InMemoryRequest([])
+        request.method = b'PUT'
+        resource.render_PUT = called.append
+        _renderResource(resource, request)
+        self.assertThat(
+            called,
+            Equals([request]))
+
+
+    def test_hasAllowedMethods(self):
+        """
+        Raise `UnsupportedErrors`, with the value of
+        ``resource.allowedMethods``, if there are no matching renderers.
+        """
+        resource = Resource()
+        request = InMemoryRequest([])
+        request.method = b'PUT'
+        resource.allowedMethods = [b'GET', b'HEAD']
+        self.assertThat(
+            partial(_renderResource, resource, request),
+            MatchesException(
+                UnsupportedMethod,
+                MatchesStructure(
+                    allowedMethods=MatchesSetwise(Equals('GET'),
+                                                  Equals('HEAD')))))
+
+
+    def test_computeAllowedMethods(self):
+        """
+        Raise `UnsupportedErrors`, computing the allowed methods, if there are
+        no matching renderers.
+        """
+        class _Resource(object):
+            render_GET = identity
+            render_HEAD = identity
+        resource = _Resource()
+        request = InMemoryRequest([])
+        request.method = b'PUT'
+        self.assertThat(
+            partial(_renderResource, resource, request),
+            MatchesException(
+                UnsupportedMethod,
+                MatchesStructure(
+                    allowedMethods=MatchesSetwise(Equals('GET'),
+                                                  Equals('HEAD')))))
 
 
 
