@@ -5,10 +5,10 @@ Spinneret: Twisted Web's Silk Spinner
 
 (Spinneret is still young, its API should be considered unstable.)
 
-Spinneret is a collection of higher-level utility classes and functions to make
-writing complex Twisted Web applications far simpler, it is designed to easily
-integrate with existing Twisted Web projects for things like the improved
-``IResource`` implementations.
+Spinneret is a collection of higher-level utilities (such as URL routing,
+content type negotiation and processing query arguments) to make writing
+complex Twisted Web applications far simpler and (hopefully) more fun! It is
+designed to easily integrate with existing Twisted Web projects.
 
 For more info `read the docs <http://txspinneret.readthedocs.org>`_.
 
