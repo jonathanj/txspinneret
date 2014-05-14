@@ -1,8 +1,8 @@
 import json
 from twisted.web.resource import Resource
 from twisted.web.template import Element, TagLoader, tags
-from txspinneret.resource import (
-    ContentTypeNegotiator, INegotiableResource, ISpinneretResource)
+from txspinneret.interfaces import INegotiableResource, ISpinneretResource
+from txspinneret.resource import ContentTypeNegotiator
 from zope.interface import implementer
 
 @implementer(INegotiableResource)
