@@ -134,6 +134,9 @@ class SpinneretResourceTests(TestCase):
         self.assertThat(
             http.NOT_FOUND,
             Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
 
 
     def test_locateChildNotFound(self):
@@ -156,6 +159,9 @@ class SpinneretResourceTests(TestCase):
         self.assertThat(
             http.NOT_FOUND,
             Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
 
 
     def test_locateChildRenderable(self):
@@ -169,7 +175,7 @@ class SpinneretResourceTests(TestCase):
         @implementer(ISpinneretResource)
         class _TestResource(object):
             def locateChild(zelf, request, segments):
-                return _TestElement(), segments
+                return _TestElement(), []
 
         resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
@@ -181,6 +187,9 @@ class SpinneretResourceTests(TestCase):
         self.assertThat(
             http.OK,
             Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
 
 
     def test_locateChildResource(self):
@@ -197,7 +206,7 @@ class SpinneretResourceTests(TestCase):
         @implementer(ISpinneretResource)
         class _TestResource(object):
             def locateChild(zelf, request, segments):
-                return _ResultingResource(), segments
+                return _ResultingResource(), []
 
         resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
@@ -209,6 +218,41 @@ class SpinneretResourceTests(TestCase):
         self.assertThat(
             http.OK,
             Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
+
+
+    def test_locateChildSpinneretResource(self):
+        """
+        If ``locateChild`` returns something adaptable to `ISpinneretResource`
+        it is adapted to an `IResource`.
+        """
+        @implementer(ISpinneretResource)
+        class _ResultingResource(object):
+            def render_GET(zelf, request):
+                request.setResponseCode(http.OK)
+                return b'hello world'
+
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
+            def locateChild(zelf, request, segments):
+                return _ResultingResource(), []
+
+        resource = SpinneretResource(_TestResource())
+        request = InMemoryRequest([''])
+        request.method = b'GET'
+        result = getChildForRequest(resource, request)
+        request.render(result)
+        self.assertThat(
+            b''.join(request.written),
+            Equals(b'hello world'))
+        self.assertThat(
+            http.OK,
+            Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
 
 
     def test_locateChildRedirect(self):
@@ -218,7 +262,7 @@ class SpinneretResourceTests(TestCase):
         @implementer(ISpinneretResource)
         class _TestResource(object):
             def locateChild(zelf, request, segments):
-                return URLPath.fromString(b'http://quux.com/bar'), segments
+                return URLPath.fromString(b'http://quux.com/bar'), []
 
         resource = SpinneretResource(_TestResource())
         request = InMemoryRequest([''])
@@ -231,6 +275,9 @@ class SpinneretResourceTests(TestCase):
         self.assertThat(
             http.FOUND,
             Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
 
 
 
@@ -238,6 +285,20 @@ class SpinneretResourceTests(TestCase):
 class _FooJSON(Resource):
     """
     Resource for handling ``application/json`` requests.
+    """
+    contentType = b'application/json'
+    acceptTypes = [contentType]
+
+    def render_GET(zelf, request):
+        request.setResponseCode(http.OK)
+        return b'hello world'
+
+
+
+@implementer(INegotiableResource, ISpinneretResource)
+class _FooSpinneretJSON(object):
+    """
+    Spinneret resource for handling ``application/json`` requests.
     """
     contentType = b'application/json'
     acceptTypes = [contentType]
@@ -313,11 +374,31 @@ class ContentTypeNegotiatorTests(TestCase):
             Equals(request.responseCode))
 
 
-    def test_negotiate(self):
+    def test_negotiateResource(self):
         """
         Negotiate a handler resource based on the ``Accept`` header.
         """
         resource = ContentTypeNegotiator([_FooJSON()])
+        request = InMemoryRequest([])
+        request.requestHeaders.setRawHeaders(b'accept', [b'application/json'])
+        request.render(resource)
+        self.assertThat(
+            b''.join(request.written),
+            Equals(b'hello world'))
+        self.assertThat(
+            request.outgoingHeaders,
+            ContainsDict(
+                {b'content-type': Equals(b'application/json')}))
+        self.assertThat(
+            http.OK,
+            Equals(request.responseCode))
+
+
+    def test_negotiateSpinneretResource(self):
+        """
+        Negotiate a Spinneret handler resource based on the ``Accept`` header.
+        """
+        resource = ContentTypeNegotiator([_FooSpinneretJSON()])
         request = InMemoryRequest([])
         request.requestHeaders.setRawHeaders(b'accept', [b'application/json'])
         request.render(resource)
