@@ -1,31 +1,5 @@
-*.py[cod]
+# Please use a local ignore file instead.
 
-# C extensions
-*.so
-
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
-__pycache__
-
-# Installer logs
-pip-log.txt
-
-# Unit test / coverage reports
-.coverage
-htmlcov
-.tox
-
-_trial_temp
-
+# Global ignores can go in ~/.config/git/ignore
+# Per-repo ignores can go in .git/info/exclude
+# See "git help ignore" for more details.
