@@ -1,0 +1,5 @@
+# Please use a local ignore file instead.
+
+# Global ignores can go in ~/.config/git/ignore
+# Per-repo ignores can go in .git/info/exclude
+# See "git help ignore" for more details.
