@@ -12,16 +12,18 @@ More featureful resources
 
 `ISpinneretResource` is cut-down version of `IResource` that allows child
 location (via `ISpinneretResource.locateChild`) and rendering (via the normal
-``render_GET``, ``render_POST``, etc. methods) to return any of the following:
+``render_GET``, ``render_POST``, etc. methods) to return a 2-`tuple` of firstly
+any of the following:
 
     * `bytes`, in the same way that `IResource` does;
     * An object that can be adapted to either `IResource` or `IRenderable`;
     * A `URLPath` instance, to indicate an HTTP redirect;
     * Or a `Deferred` that results in any of the above values.
 
-`ISpinneretResource` implementations may be adapted to `IResource`, either via
-``IResource(impl)`` or by ``SpinneretResource(impl)``, to produce a resource
-suitable for use with Twisted Web.
+And secondly, a `list` of remaining path segments to be processed.
+
+`ISpinneretResource` implementations may be adapted to `IResource` via
+`SpinneretResource`, to produce a resource suitable for use with Twisted Web.
 
 
 Negotiating resources based on ``Accept``

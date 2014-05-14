@@ -36,6 +36,6 @@ Utility resources
 Interfaces
 ----------
 
-.. automodule:: txspinneret._interfaces
+.. automodule:: txspinneret.interfaces
    :members:
    :show-inheritance:

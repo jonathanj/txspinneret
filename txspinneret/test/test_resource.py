@@ -6,14 +6,13 @@ from twisted.internet.defer import Deferred
 from twisted.python.urlpath import URLPath
 from twisted.web import http
 from twisted.web.error import UnsupportedMethod
-from twisted.web.resource import getChildForRequest, Resource, IResource
-from twisted.web.static import Data
+from twisted.web.resource import getChildForRequest, Resource
 from twisted.web.template import Element, TagLoader, tags
 from zope.interface import implementer
 
+from txspinneret.interfaces import INegotiableResource, ISpinneretResource
 from txspinneret.resource import (
-    ContentTypeNegotiator, SpinneretResource, INegotiableResource,
-    ISpinneretResource, _renderResource)
+    ContentTypeNegotiator, SpinneretResource, _renderResource)
 from txspinneret.util import identity
 from txspinneret.test.util import InMemoryRequest, MatchesException
 
@@ -81,24 +80,6 @@ class SpinneretResourceTests(TestCase):
     """
     Tests for `txspinneret.resource.SpinneretResource`.
     """
-    def test_resourceAdapter(self):
-        """
-        `ISpinneretResource` can be adapted to `IResource`.
-        """
-        @implementer(ISpinneretResource)
-        class _Adaptable(object):
-            def locateChild(zelf, request, segments):
-                return Data(b'hello', b'text/plain'), []
-
-        resource = IResource(_Adaptable())
-        request = InMemoryRequest([b'foo'])
-        result = getChildForRequest(resource, request)
-        request.render(result)
-        self.assertThat(
-            request.written,
-            Equals([b'hello']))
-
-
     def test_renderDeferred(self):
         """
         It is possible to return a `Deferred` from a render method.
