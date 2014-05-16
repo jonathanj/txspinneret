@@ -64,7 +64,7 @@ class NotFound(NoResource):
 
 class _RenderableResource(Resource):
     """
-    `IResource` implementation for `IRenderable`s.
+    Adapter from `IRenderable` to `IResource`.
     """
     isLeaf = True
 
@@ -82,7 +82,7 @@ class _RenderableResource(Resource):
 
 class SpinneretResource(Resource):
     """
-    Adapter for `ISpinneretResource` to `IResource`.
+    Adapter from `ISpinneretResource` to `IResource`.
     """
     def __init__(self, wrappedResource):
         """
