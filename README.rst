@@ -14,7 +14,10 @@ For more info `read the docs <http://txspinneret.readthedocs.org>`_.
 
 
 Contribute
-----------
+==========
+
+See https://txspinneret.readthedocs.org/en/latest/contributing.html for
+information on contributing to Spinneret.
 
 See http://github.com/jonathanj/txspinneret for development.
 
