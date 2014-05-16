@@ -31,6 +31,20 @@ but also encouraged!
 .. _Klein: https://github.com/twisted/klein
 
 
+Installation
+============
+
+.. code-block:: bash
+
+    $ pip install txspinneret
+
+Or to install the latest development version:
+
+.. code-block:: bash
+
+    $ pip install git+git://github.com/jonathanj/txspinneret
+
+
 Documentation
 -------------
 
