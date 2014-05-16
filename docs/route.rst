@@ -1,11 +1,10 @@
 .. py:currentmodule:: txspinneret.route
 
-URL Routing Resources
-=====================
+URL Routing
+===========
 
-Often it is desirable to describe a resource hierarchy without having to
-create a separate resource for every segment in the URL path, this is commonly
-referred to as "URL routing".
+Often it is desirable to describe a resource hierarchy by matching URL
+segments in the request, this is commonly referred to as "URL routing".
 
 A Python-based Domain Specific Language is used to specify and match routing
 paths, string literal components are matched for structure while plain callable
@@ -31,8 +30,15 @@ will be a match, regardless of whether there are URL path segments left over.
 This is useful for the case where you wish to match enough of the URL to know
 that you should delegate to another resource.
 
+A route handler may return any of the values that
+`ISpinneretResource.locateChild <txspinneret.resource.ISpinneretResource>`
+supports.
+
 Routes are intended to be used as method decorators and may be stacked to have
 multiple routes serviced by the same handler.
+
+Call `Router.resource` to produce an `IResource` suitable for composing with
+other parts of Spinneret or Twisted Web.
 
 
 Special routes
@@ -50,7 +56,7 @@ Assuming we had the following hierarchy:
 
         @router.subroute('bar')
         def bar(self, request, params):
-            return SubRoot().router
+            return SubRoot().router.resource()
 
 
     class SubRoot(object):

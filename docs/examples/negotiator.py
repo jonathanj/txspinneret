@@ -1,8 +1,8 @@
 import json
 from twisted.web.resource import Resource
 from twisted.web.template import Element, TagLoader, tags
-from txspinneret.interfaces import INegotiableResource
-from txspinneret.resource import ContentTypeNegotiator, SpinneretResource
+from txspinneret.interfaces import INegotiableResource, ISpinneretResource
+from txspinneret.resource import ContentTypeNegotiator
 from zope.interface import implementer
 
 @implementer(INegotiableResource)
@@ -20,8 +20,8 @@ class FooJSON(Resource):
 class FooElement(Element):
     loader = TagLoader(tags.h1('Try accepting JSON!'))
 
-@implementer(INegotiableResource)
-class FooHTML(SpinneretResource):
+@implementer(INegotiableResource, ISpinneretResource)
+class FooHTML(object):
     contentType = 'text/html'
     acceptTypes = ['text/html']
 

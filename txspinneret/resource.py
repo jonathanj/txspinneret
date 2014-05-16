@@ -2,23 +2,42 @@
 A collection of higher-level Twisted Web resources, suitable for use with any
 existing ``IResource`` implementations.
 
-`SpinneretResource` supports child location that results in an `IResource`,
-`IRenderable` or `URLPath` (to indicate a redirect), or a `Deferred` resulting
-in any of the previously mentioned values.
+`SpinneretResource` adapts an `ISpinneretResource` to `IResource`.
 
 `ContentTypeNegotiator` will negotiate a resource based on the ``Accept``
 header.
 """
 from twisted.internet.defer import Deferred, maybeDeferred, succeed
+from twisted.python.compat import nativeString
+from twisted.python.urlpath import URLPath
 from twisted.web import http
+from twisted.web.error import UnsupportedMethod
 from twisted.web.iweb import IRenderable
-from twisted.web.resource import IResource, NoResource, Resource
+from twisted.web.resource import (
+    IResource, NoResource, Resource, _computeAllowedMethods)
 from twisted.web.server import NOT_DONE_YET
 from twisted.web.template import renderElement
 from twisted.web.util import DeferredResource, Redirect
-from twisted.python.urlpath import URLPath
 
+from txspinneret.interfaces import ISpinneretResource
 from txspinneret.util import _parseAccept
+
+
+
+def _renderResource(resource, request):
+    """
+    Render a given resource.
+
+    See `IResource.render <twisted:twisted.web.resource.IResource.render>`.
+    """
+    meth = getattr(resource, 'render_' + nativeString(request.method), None)
+    if meth is None:
+        try:
+            allowedMethods = resource.allowedMethods
+        except AttributeError:
+            allowedMethods = _computeAllowedMethods(resource)
+        raise UnsupportedMethod(allowedMethods)
+    return meth(request)
 
 
 
@@ -45,7 +64,7 @@ class NotFound(NoResource):
 
 class _RenderableResource(Resource):
     """
-    `IResource` implementation for `IRendable`s.
+    Adapter from `IRenderable` to `IResource`.
     """
     isLeaf = True
 
@@ -61,15 +80,19 @@ class _RenderableResource(Resource):
 
 
 
-class SpinneretResource(Resource, object):
+class SpinneretResource(Resource):
     """
-    Web resource convenience base class.
+    Adapter from `ISpinneretResource` to `IResource`.
+    """
+    def __init__(self, wrappedResource):
+        """
+        :type  wrappedResource: `ISpinneretResource`
+        :param wrappedResource: Spinneret resource to wrap in an `IResource`.
+        """
+        self._wrappedResource = wrappedResource
+        Resource.__init__(self)
 
-    Child resource location is done by `SpinneretResource.locateChild`, which
-    gives a slightly higher level interface than
-    `IResource.getChildWithDefault
-    <twisted:twisted.web.resource.IResource.getChildWithDefault>`.
-    """
+
     def _adaptToResource(self, result):
         """
         Adapt a result to `IResource`.
@@ -85,6 +108,10 @@ class SpinneretResource(Resource, object):
         """
         if result is None:
             return NotFound()
+
+        spinneretResource = ISpinneretResource(result, None)
+        if spinneretResource is not None:
+            return SpinneretResource(spinneretResource)
 
         renderable = IRenderable(result, None)
         if renderable is not None:
@@ -106,8 +133,15 @@ class SpinneretResource(Resource, object):
             request.postpath[:] = segments
             return result
 
-        segments = request.prepath[-1:] + request.postpath
-        d = maybeDeferred(self.locateChild, request, segments)
+        def _locateChild(request, segments):
+            def _defaultLocateChild(request, segments):
+                return NotFound(), []
+            locateChild = getattr(
+                self._wrappedResource, 'locateChild', _defaultLocateChild)
+            return locateChild(request, segments)
+
+        d = maybeDeferred(
+            _locateChild, request, request.prepath[-1:] + request.postpath)
         d.addCallback(_setSegments)
         d.addCallback(self._adaptToResource)
         return DeferredResource(d)
@@ -142,29 +176,14 @@ class SpinneretResource(Resource, object):
 
 
     def render(self, request):
-        return self._handleRenderResult(
-            request,
-            super(SpinneretResource, self).render(request))
-
-
-    def locateChild(self, request, segments):
-        """
-        Locate another object which can be adapted to `IResource`.
-
-        :type  request: `IRequest`
-        :param request: Request.
-
-        :type  segments: ``sequence`` of `bytes`
-        :param segments: Sequence of strings giving the remaining query
-            segments to resolve.
-
-        :rtype: 2-`tuple` of `IResource`, `IRendable` or `URLPath` and
-            a ``sequence`` of `bytes`
-        :return: Pair of an `IResource`, `IRendable` or `URLPath` and
-            a sequence of the remaining path segments to be process, or
-            a `Deferred` containing the aforementioned result.
-        """
-        return NotFound(), []
+        # This is kind of terrible but we need `_RouterResource.render` to be
+        # called to handle the null route. Finding a better way to achieve this
+        # would be great.
+        if hasattr(self._wrappedResource, 'render'):
+            result = self._wrappedResource.render(request)
+        else:
+            result = _renderResource(self._wrappedResource, request)
+        return self._handleRenderResult(request, result)
 
 
 
@@ -177,9 +196,10 @@ class ContentTypeNegotiator(Resource):
     """
     def __init__(self, handlers, fallback=False):
         """
-        :type  handlers: ``iterable`` of `INegotiableResource
-            <txspinneret.interfaces.INegotiableResource>`
-        :param handlers: Iterable of resources to use as handlers for
+        :type  handlers: ``iterable`` of `INegotiableResource` and either
+            `IResource` or `ISpinneretResource`.
+        :param handlers: Iterable of negotiable resources, either
+            `ISpinneretResource` or `IResource`, to use as handlers for
             negotiation.
 
         :type  fallback: `bool`
@@ -219,10 +239,15 @@ class ContentTypeNegotiator(Resource):
 
 
     def render(self, request):
-        handler, contentType = self._negotiateHandler(request)
+        resource, contentType = self._negotiateHandler(request)
         if contentType is not None:
             request.setHeader(b'Content-Type', contentType)
-        return handler.render(request)
+
+        spinneretResource = ISpinneretResource(resource, None)
+        if spinneretResource is not None:
+            resource = SpinneretResource(spinneretResource)
+
+        return resource.render(request)
 
 
 

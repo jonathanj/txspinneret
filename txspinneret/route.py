@@ -18,9 +18,11 @@ handlers.
 from collections import OrderedDict
 from functools import partial
 from itertools import izip_longest
+from zope.interface import implementer
 
 from txspinneret import query
-from txspinneret.resource import NotFound, SpinneretResource
+from txspinneret.resource import (
+    NotFound, SpinneretResource, ISpinneretResource)
 from txspinneret.util import contentEncoding
 
 
@@ -199,15 +201,73 @@ def subroute(*components):
 
 
 
-class Router(SpinneretResource):
+@implementer(ISpinneretResource)
+class _RouterResource(object):
     """
-    Resource that provides path-based routing to `IResource
+    Resource that provides URL routing to `IResource
     <twisted:twisted.web.resource.IResource>`.
+    """
+    def __init__(self, obj, routes):
+        """
+        :param obj: Parent object containing the route handler.
 
-    `Router` is designed to be used as a Python descriptor, and route handlers
-    decorated with `Router.route` or `Router.subroute`, route handlers should
-    any value supported by `SpinneretResource.locateChild
-    <txspinneret.resource.SpinneretResource.locateChild>`.
+        :type  routes: `list` of 3-`tuple` containing `bytes`, `callable`,
+            `callable`
+        :param routes: List of 3-tuple containing the route handler name, the
+            route handler function and the matcher function.
+        """
+        self._obj = obj
+        self._routes = routes
+
+
+    def _matchRoute(self, request, segments):
+        """
+        Find a route handler that matches the request path and invoke it.
+        """
+        for name, meth, route in self._routes:
+            matches, remaining = route(request, segments)
+            if matches is not None:
+                return meth(self._obj, request, matches), remaining
+        return None, segments
+
+
+    def render(self, request):
+        # This only exists to handle the null route case, ie. there are no
+        # segments so this resource's render method is invoked.
+        result, segments = self._matchRoute(request, [])
+        if result is None:
+            result = NotFound()
+        return result.render(request)
+
+
+    # ISpinneretResource
+
+    def locateChild(self, request, segments):
+        return self._matchRoute(request, segments)
+
+
+
+class Router(object):
+    """
+    URL routing.
+
+    `Router` is designed to be used as a Python descriptor using `Router.route`
+    or `Router.subroute` to decorate route handlers, for example:
+
+    .. code-block:: python
+
+        class Users(object):
+            router = Router()
+
+            @router.route('name')
+            def name(self, request, params):
+                # ...
+
+    Route handlers can return any value supported by
+    `ISpinneretResource.locateChild`.
+
+    Calling `Router.resource` will produce an `IResource
+    <twisted:twisted.web.resource.IResource>`.
     """
     def __init__(self):
         self._routes = []
@@ -237,6 +297,14 @@ class Router(SpinneretResource):
         self._routes.append((f.func_name, f, matcher))
 
 
+    def resource(self):
+        """
+        Create an `IResource <twisted:twisted.web.resource.IResource>` that
+        will perform URL routing.
+        """
+        return SpinneretResource(_RouterResource(self._self, self._routes))
+
+
     def route(self, *components):
         """
         See `txspinneret.route.route`.
@@ -261,30 +329,6 @@ class Router(SpinneretResource):
             self._addRoute(f, subroute(*components))
             return f
         return _factory
-
-
-    def _matchRoute(self, request, segments):
-        """
-        Find a route handler that matches the request path and invoke it.
-        """
-        for name, meth, route in self._routes:
-            matches, remaining = route(request, segments)
-            if matches is not None:
-                return meth(self._self, request, matches), remaining
-        return None, segments
-
-
-    def render(self, request):
-        # This only exists to handle the null route case, ie. there are no
-        # segments so this resource's render method is invoked.
-        result, segments = self._matchRoute(request, [])
-        if result is None:
-            result = NotFound()
-        return self._handleRenderResult(request, result.render(request))
-
-
-    def locateChild(self, request, segments):
-        return self._matchRoute(request, segments)
 
 
 
