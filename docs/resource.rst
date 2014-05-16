@@ -1,5 +1,6 @@
 .. py:currentmodule:: txspinneret.resource
 
+==================
 Resource Utilities
 ==================
 
@@ -8,7 +9,7 @@ with any existing `IResource` implementations.
 
 
 More featureful resources
--------------------------
+=========================
 
 `ISpinneretResource` is cut-down version of `IResource` that allows child
 location (via `ISpinneretResource.locateChild`) and rendering (via the normal
@@ -27,7 +28,7 @@ And secondly, a `list` of remaining path segments to be processed.
 
 
 Negotiating resources based on ``Accept``
------------------------------------------
+=========================================
 
 When building an API, in particular, you may want to negotiate the resource
 that best fits what the client is willing to accept, as specified in the
