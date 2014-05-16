@@ -41,8 +41,7 @@ setup(
     name="txspinneret",
     version=get_version(),
     description=cleandoc("""
-        Spinneret is a collection of higher-level utility classes and functions
-        for Twisted Web.
+        Spinneret is a collection of higher-level utility classes and functions for Twisted Web.
         """),
     install_requires=["zope.interface>=3.6.0", "twisted>=13.2.0"],
     keywords="twisted web routing",
