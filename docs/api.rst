@@ -1,8 +1,9 @@
+=================
 API Documentation
 =================
 
 Resource routing
-----------------
+================
 
 .. automodule:: txspinneret.route
    :members:
@@ -14,7 +15,7 @@ Resource routing
 
 
 Query arguments
----------------
+===============
 
 .. automodule:: txspinneret.query
    :members:
@@ -26,7 +27,7 @@ Query arguments
 
 
 Utility resources
------------------
+=================
 
 .. automodule:: txspinneret.resource
    :members:
@@ -37,7 +38,7 @@ Utility resources
 
 
 Interfaces
-----------
+==========
 
 .. automodule:: txspinneret.interfaces
    :members:

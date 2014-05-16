@@ -1,5 +1,6 @@
 .. py:currentmodule:: txspinneret.query
 
+===============
 Query Arguments
 ===============
 
@@ -12,7 +13,7 @@ The tedious process of processing query arguments usually follows this pattern:
 
 
 Parsing query arguments
------------------------
+=======================
 
 This small set of utility functions can relieve some of that pain, for example
 assume the query string is

@@ -1,5 +1,6 @@
 .. py:currentmodule:: txspinneret.route
 
+===========
 URL Routing
 ===========
 
@@ -17,7 +18,7 @@ is only possible to specify relative routes.
 
 
 Router basics
--------------
+=============
 
 `Router.route` will match a URL route exactly, meaning that every route
 component must match the respective segment in the URL path; eg.
@@ -42,7 +43,7 @@ other parts of Spinneret or Twisted Web.
 
 
 Special routes
---------------
+==============
 
 There are two routes—particularly in the case of nested routers—that may not be
 obvious at first: The null root and the empty route.
@@ -70,7 +71,7 @@ with ``@router.route()`` (the null route.)
 
 
 Matcher basics
---------------
+==============
 
 `txspinneret.route` contains some basic matchers such as `Any` (which is
 a synonym for `Text`) and `Integer`. These matchers are simple factory
@@ -81,7 +82,7 @@ match.) Writing your own matchers to suit your needs is encouraged.
 
 
 An example router
------------------
+=================
 
 .. literalinclude:: examples/user_router.py
 

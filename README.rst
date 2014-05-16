@@ -1,3 +1,4 @@
+=====================================
 Spinneret: Twisted Web's Silk Spinner
 =====================================
 
@@ -23,7 +24,7 @@ See http://github.com/jonathanj/txspinneret for development.
 
 
 Installation
-------------
+============
 
 .. code-block:: console
 
