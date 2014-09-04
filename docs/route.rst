@@ -81,6 +81,15 @@ the parameter name and the processed matched value (or ``None`` if there is no
 match.) Writing your own matchers to suit your needs is encouraged.
 
 
+Reducing router resource boilerplate
+====================================
+
+When using routers as resources (such as when nesting routers) it becomes
+common to write ``return SomeRouter(...).router.resource()``. The
+`routedResource` decorator can be used to wrap a router class into
+a callable that returns a resource.
+
+
 An example router
 =================
 
