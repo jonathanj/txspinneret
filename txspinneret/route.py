@@ -362,7 +362,7 @@ def routedResource(f, routerAttribute='router'):
 
     :type  f: ``callable``
     :param f: Callable producing an object with a `Router` attribute, for
-        example a type.
+        example, a type.
 
     :type  routerAttribute: `str`
     :param routerAttribute: Name of the `Router` attribute on the result of
