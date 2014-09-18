@@ -1,8 +1,9 @@
 from collections import namedtuple
 from twisted.web.static import Data
-from txspinneret.route import Router, Any
+from txspinneret.route import Router, Any, routedResource
 
-class UserRouter(object):
+@routedResource
+class UserResource(object):
     router = Router()
 
     def __init__(self, user):
@@ -17,11 +18,11 @@ class UserRouter(object):
 
     @router.subroute('friend', Any('name'))
     def friend(self, request, params):
-        return UserRouter(self.getFriend(params['name'])).router.resource()
+        return UserResource(self.getFriend(params['name']))
 
 def start():
     User = namedtuple(b'User', ['name', 'friends'])
     bob = User('bob', {})
     chuck = User('chuck', {'bob': bob})
     default = User('default', {'bob': bob, 'chuck': chuck})
-    return UserRouter(default).router.resource()
+    return UserRouter(default)

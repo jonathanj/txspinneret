@@ -1,12 +1,14 @@
 from collections import OrderedDict
+
 from testtools import TestCase
-from testtools.matchers import Equals, Not, Is
+from testtools.matchers import Equals, Is, Not
 from twisted.web import http
 from twisted.web.http_headers import Headers
 from twisted.web.resource import getChildForRequest
 from twisted.web.static import Data
 
-from txspinneret.route import Router, route, subroute, Integer, Text
+from txspinneret.route import (
+    Integer, route, routedResource, Router, subroute, Text)
 from txspinneret.test.util import InMemoryRequest
 
 
@@ -374,10 +376,16 @@ class _SubroutedThing(object):
     Basic sub-router.
     """
     router = Router()
+    otherRouter = Router()
 
     @router.subroute(b'bar')
     def bar(self, request, params):
         return _RoutedThing().router.resource()
+
+
+    @otherRouter.route(b'other')
+    def other(self, request, params):
+        return Data(b'other router', b'text/plain')
 
 
 
@@ -498,3 +506,34 @@ class RouterTests(TestCase):
         self.assertThat(
             renderRoute(resource, [b'foo2']).written,
             Equals([b'hello world']))
+
+
+
+class RoutedResourceTests(TestCase):
+    """
+    Tests for `txspinneret.resource.routedResource`.
+    """
+    def test_defaultRouterAttribute(self):
+        """
+        ``routerAttribute`` defaults to ``'router'``.
+        """
+        resource = routedResource(_SubroutedThing)()
+        self.assertThat(
+            renderRoute(resource, [b'bar', b'foo']).written,
+            Equals([b'hello world']))
+        self.assertThat(
+            renderRoute(resource, [b'other']).responseCode,
+            Equals(http.NOT_FOUND))
+
+
+    def test_customRouterAttribute(self):
+        """
+        A custom ``routerAttribute``.
+        """
+        resource = routedResource(_SubroutedThing, 'otherRouter')()
+        self.assertThat(
+            renderRoute(resource, [b'other']).written,
+            Equals([b'other router']))
+        self.assertThat(
+            renderRoute(resource, [b'bar', b'foo']).responseCode,
+            Equals(http.NOT_FOUND))
