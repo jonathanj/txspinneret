@@ -134,7 +134,7 @@ class StaticRouteTests(TestCase):
 
     def test_emptyRoute(self):
         """
-        The empty route matches XXX.
+        Both `route('')` and `route('/')` match the empty route.
         """
         request = MockRequest()
         self.assertThat(
