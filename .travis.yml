@@ -1,5 +1,10 @@
 language: python
 python: 2.7
+sudo: false
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 
 env:
     - TOX_ENV=py27-twisted-132
@@ -8,6 +13,7 @@ env:
     - TOX_ENV=sphinx
 
 install:
+  - pip install -U pip setuptools
   - pip install coveralls coverage tox
   - python setup.py --version
   - pip install -e.[dev]
