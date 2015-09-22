@@ -110,7 +110,7 @@ def _matchRoute(components, request, segments, partialMatching):
     """
     if len(components) == 1 and isinstance(components[0], bytes):
         components = components[0]
-        if components[0] == '/':
+        if components[:1] == '/':
             components = components[1:]
         components = components.split('/')
 

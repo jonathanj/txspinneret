@@ -132,6 +132,19 @@ class StaticRouteTests(TestCase):
             Equals((None, ['foo'])))
 
 
+    def test_emptyRoute(self):
+        """
+        Both `route('')` and `route('/')` match the empty route.
+        """
+        request = MockRequest()
+        self.assertThat(
+            route('/')(request, ['']),
+            Equals((OrderedDict(), [])))
+        self.assertThat(
+            route('')(request, ['']),
+            Equals((OrderedDict(), [])))
+
+
     def test_single(self):
         """
         Match a route with a single component.
