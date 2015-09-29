@@ -74,7 +74,7 @@ class _RenderableResource(Resource):
         self._doctype = doctype
 
 
-    def render_GET(self, request):
+    def render(self, request):
         request.setResponseCode(http.OK)
         return renderElement(request, self._renderable, self._doctype)
 
