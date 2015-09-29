@@ -192,6 +192,34 @@ class SpinneretResourceTests(TestCase):
             Equals([]))
 
 
+    def test_renderableResourceMethods(self):
+        """
+        `IRenderable` results allow any HTTP method.
+        """
+        class _TestElement(Element):
+            loader = TagLoader(tags.span(u'Hello ', tags.em(u'World')))
+
+        @implementer(ISpinneretResource)
+        class _TestResource(object):
+            def locateChild(zelf, request, segments):
+                return _TestElement(), []
+
+        resource = SpinneretResource(_TestResource())
+        request = InMemoryRequest([''])
+        request.method = 'POST'
+        result = getChildForRequest(resource, request)
+        request.render(result)
+        self.assertThat(
+            b''.join(request.written),
+            Equals(b'<!DOCTYPE html>\n<span>Hello <em>World</em></span>'))
+        self.assertThat(
+            http.OK,
+            Equals(request.responseCode))
+        self.assertThat(
+            request.postpath,
+            Equals([]))
+
+
     def test_locateChildResource(self):
         """
         If ``locateChild`` returns something adaptable to `IResource` it is
