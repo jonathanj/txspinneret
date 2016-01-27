@@ -15,6 +15,13 @@ class InMemoryRequest(DummyRequest):
         # This was only added to `DummyRequest` in Twisted 14.0.0, so we'll do
         # this so our tests pass on older versions of Twisted.
         self.requestHeaders = Headers()
+        self.responseHeaders = Headers()
+
+
+    def setHeader(self, name, value):
+        # This was changed in 16.0.0 (or what will be Twisted 16.0.0) while
+        # `outgoingHeaders` was entirely deleted.
+        self.responseHeaders.addRawHeader(name, value)
 
 
     def redirect(self, url):

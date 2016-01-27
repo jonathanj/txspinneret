@@ -297,9 +297,9 @@ class SpinneretResourceTests(TestCase):
         result = getChildForRequest(resource, request)
         request.render(result)
         self.assertThat(
-            request.outgoingHeaders,
+            dict(request.responseHeaders.getAllRawHeaders()),
             ContainsDict(
-                {b'location': Equals(b'http://quux.com/bar')}))
+                {b'Location': Equals([b'http://quux.com/bar'])}))
         self.assertThat(
             http.FOUND,
             Equals(request.responseCode))
@@ -394,9 +394,9 @@ class ContentTypeNegotiatorTests(TestCase):
             b''.join(request.written),
             Equals(b'hello world'))
         self.assertThat(
-            request.outgoingHeaders,
+            dict(request.responseHeaders.getAllRawHeaders()),
             ContainsDict(
-                {b'content-type': Equals(b'application/json')}))
+                {b'Content-Type': Equals([b'application/json'])}))
         self.assertThat(
             http.OK,
             Equals(request.responseCode))
@@ -414,9 +414,9 @@ class ContentTypeNegotiatorTests(TestCase):
             b''.join(request.written),
             Equals(b'hello world'))
         self.assertThat(
-            request.outgoingHeaders,
+            dict(request.responseHeaders.getAllRawHeaders()),
             ContainsDict(
-                {b'content-type': Equals(b'application/json')}))
+                {b'Content-Type': Equals([b'application/json'])}))
         self.assertThat(
             http.OK,
             Equals(request.responseCode))
@@ -434,9 +434,9 @@ class ContentTypeNegotiatorTests(TestCase):
             b''.join(request.written),
             Equals(b'hello world'))
         self.assertThat(
-            request.outgoingHeaders,
+            dict(request.responseHeaders.getAllRawHeaders()),
             ContainsDict(
-                {b'content-type': Equals(b'application/json')}))
+                {b'Content-Type': Equals([b'application/json'])}))
         self.assertThat(
             http.OK,
             Equals(request.responseCode))
